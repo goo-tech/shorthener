@@ -1,0 +1,146 @@
+/* Reset dasar dan gaya body */
+body {
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+/* Kontainer utama */
+.container {
+    text-align: center;
+    background: white;
+    padding: 2.5rem 3rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    width: 90%;
+    max-width: 550px;
+    transition: all 0.3s ease;
+}
+
+header h1 {
+    font-size: 2rem;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+}
+
+header p {
+    font-size: 1rem;
+    color: #718096;
+    margin-bottom: 2rem;
+}
+
+/* Form input */
+#shorten-form {
+    display: flex;
+    gap: 0.75rem;
+}
+
+#long-url {
+    flex-grow: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#long-url:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+}
+
+button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    background: linear-gradient(90deg, #4a90e2, #50e3c2);
+    color: white;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Hasil URL pendek */
+#result {
+    margin-top: 2rem;
+    text-align: left;
+}
+
+#result p {
+    color: #4a5568;
+    margin-bottom: 0.5rem;
+}
+
+.short-url-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background-color: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+#short-url {
+    flex-grow: 1;
+    font-size: 1rem;
+    color: #4a90e2;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#short-url:hover {
+    text-decoration: underline;
+}
+
+#copy-btn {
+    background: #e2e8f0;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#copy-btn svg {
+    stroke: #4a5568;
+}
+
+#copy-btn:hover {
+    background: #cbd5e0;
+    transform: none;
+    box-shadow: none;
+}
+
+#copy-feedback {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #50e3c2;
+    text-align: right;
+    font-weight: 500;
+}
+
+/* Kelas utilitas */
+.hidden {
+    display: none;
+}
