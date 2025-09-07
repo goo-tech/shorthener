@@ -1,26 +1,14 @@
 {
-  "dependencies": {
-    "@vercel/blob": "^1.1.1",
-    "@vercel/kv": "^3.0.0",
-    "express": "^5.1.0",
-    "nanoid": "^5.1.5"
-  },
-  "name": "shortener",
+  "name": "shorthener",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A simple URL shortener with Node.js, Express, and Redis.",
+  "main": "api/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node api/index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/goo-tech/shorthener.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/goo-tech/shorthener/issues"
-  },
-  "homepage": "https://github.com/goo-tech/shorthener#readme"
+  "dependencies": {
+    "express": "^4.21.2",
+    "ioredis": "^5.4.1",
+    "nanoid": "^3.3.7"
+  }
 }

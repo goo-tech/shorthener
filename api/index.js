@@ -1,17 +1,18 @@
-// Mengimpor paket yang dibutuhkan
 const express = require('express');
 const path = require('path');
-const { kv } = require('@vercel/kv');
+// Impor ioredis, klien Redis standar
+const Redis = require('ioredis');
+// Impor nanoid v3 untuk kompatibilitas
 const { nanoid } = require('nanoid');
 
-// Membuat aplikasi Express
-const app = express();
+// Membuat koneksi ke Redis Cloud.
+// ioredis akan secara otomatis membaca dan menggunakan variabel lingkungan REDIS_URL.
+const redis = new Redis(process.env.REDIS_URL);
 
-// Middleware untuk membaca body JSON dari request
+const app = express();
 app.use(express.json());
 
-// Middleware untuk menyajikan file statis dari folder 'public'
-// Ini akan menyajikan index.html, style.css, dan script.js
+// Sajikan file front-end statis dari folder 'public'
 const publicPath = path.join(__dirname, '..', 'public');
 app.use(express.static(publicPath));
 
@@ -20,34 +21,29 @@ app.post('/api/shorten', async (req, res) => {
   try {
     const { longUrl } = req.body;
 
-    // Validasi URL
     if (!longUrl) {
       return res.status(400).json({ error: 'longUrl wajib diisi' });
     }
-    // Cek format URL sederhana
+    
+    // Validasi sederhana untuk memastikan itu adalah URL yang valid
     try {
       new URL(longUrl);
     } catch (_) {
       return res.status(400).json({ error: 'Format URL tidak valid' });
     }
 
-    // Buat kode unik yang pendek (7 karakter)
     const shortCode = nanoid(7);
+    await redis.set(shortCode, longUrl);
 
-    // Simpan pasangan kode pendek -> URL panjang di database Vercel KV
-    await kv.set(shortCode, longUrl);
-
-    // Dapatkan baseUrl. Prioritaskan header dari Vercel untuk domain kustom.
     const host = req.headers['x-forwarded-host'] || req.headers.host;
     const protocol = process.env.VERCEL_URL ? 'https' : 'http';
     const baseUrl = `${protocol}://${host}`;
     const shortUrl = `${baseUrl}/${shortCode}`;
 
-    // Kirim URL pendek sebagai respons
     return res.status(200).json({ shortUrl });
 
   } catch (error) {
-    console.error(error);
+    console.error('API Error:', error);
     return res.status(500).json({ error: 'Terjadi kesalahan internal pada server' });
   }
 });
@@ -56,27 +52,19 @@ app.post('/api/shorten', async (req, res) => {
 app.get('/:shortCode', async (req, res) => {
     try {
         const { shortCode } = req.params;
-        
-        // Jangan proses request ke file statis atau API
-        if (shortCode === 'style.css' || shortCode === 'script.js' || shortCode === 'favicon.ico') {
-            return res.status(204).send();
-        }
-        
-        // Cari URL panjang di database berdasarkan shortCode
-        const longUrl = await kv.get(shortCode);
+        const longUrl = await redis.get(shortCode);
 
         if (longUrl) {
-            // Jika ditemukan, alihkan pengguna ke URL asli
             return res.redirect(301, longUrl);
         } else {
-            // Jika tidak ditemukan, sajikan halaman 404 sederhana atau kembali ke halaman utama
+            // Jika tidak ditemukan, sajikan halaman utama (404)
             return res.status(404).sendFile(path.join(publicPath, 'index.html'));
         }
     } catch (error) {
-        console.error(error);
+        console.error('Redirect Error:', error);
         return res.status(500).json({ error: 'Terjadi kesalahan internal pada server' });
     }
 });
 
-// Export aplikasi agar bisa digunakan oleh Vercel
 module.exports = app;
+

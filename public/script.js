@@ -1,62 +1,52 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const shortenForm = document.getElementById('shorten-form');
-    const longUrlInput = document.getElementById('long-url');
+document.getElementById('shorten-form').addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const longUrl = document.getElementById('long-url').value;
     const resultDiv = document.getElementById('result');
     const shortUrlLink = document.getElementById('short-url');
-    const copyBtn = document.getElementById('copy-btn');
-    const copyFeedback = document.getElementById('copy-feedback');
+    const errorMessageDiv = document.getElementById('error-message');
+    const shortenButton = event.target.querySelector('button');
 
-    shortenForm.addEventListener('submit', async function(event) {
-        event.preventDefault();
-        
-        const longUrl = longUrlInput.value;
-        const shortenButton = this.querySelector('button');
+    // Reset UI
+    resultDiv.classList.add('hidden');
+    errorMessageDiv.classList.add('hidden');
+    shortenButton.textContent = 'Memendekkan...';
+    shortenButton.disabled = true;
 
-        // Nonaktifkan tombol dan tampilkan status loading
-        shortenButton.disabled = true;
-        shortenButton.textContent = 'Memproses...';
-        resultDiv.classList.add('hidden'); // Sembunyikan hasil lama
+    try {
+        // Ganti dengan URL /api/shorten saja. Browser akan otomatis menggunakan domain yang sama.
+        const response = await fetch('/api/shorten', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ longUrl: longUrl })
+        });
 
-        try {
-            // PENTING: URL ini akan kita ganti nanti dengan URL Vercel kita yang sebenarnya
-            const apiUrl = '/api/shorten'; // Menggunakan path relatif untuk development dan production
+        const data = await response.json();
 
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ longUrl: longUrl })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Terjadi kesalahan pada server.');
-            }
-
-            const data = await response.json();
+        if (response.ok) {
             shortUrlLink.href = data.shortUrl;
             shortUrlLink.textContent = data.shortUrl;
             resultDiv.classList.remove('hidden');
-
-        } catch (error) {
-            alert(`Gagal memendekkan URL: ${error.message}`);
-        } finally {
-            // Aktifkan kembali tombol
-            shortenButton.disabled = false;
-            shortenButton.textContent = 'Pendekkan';
+        } else {
+            // Tampilkan pesan error dari server
+            throw new Error(data.error || 'Terjadi kesalahan.');
         }
-    });
 
-    copyBtn.addEventListener('click', function() {
-        navigator.clipboard.writeText(shortUrlLink.href).then(() => {
-            copyFeedback.classList.remove('hidden');
-            setTimeout(() => {
-                copyFeedback.classList.add('hidden');
-            }, 2000); // Sembunyikan pesan setelah 2 detik
-        }).catch(err => {
-            console.error('Gagal menyalin teks: ', err);
-            alert('Gagal menyalin URL.');
-        });
+    } catch (error) {
+        errorMessageDiv.textContent = error.message;
+        errorMessageDiv.classList.remove('hidden');
+    } finally {
+        // Kembalikan tombol ke keadaan semula
+        shortenButton.textContent = 'Pendekkan';
+        shortenButton.disabled = false;
+    }
+});
+
+document.getElementById('copy-btn').addEventListener('click', function() {
+    const shortUrl = document.getElementById('short-url').textContent;
+    navigator.clipboard.writeText(shortUrl).then(() => {
+        alert('URL pendek berhasil disalin!');
     });
 });
