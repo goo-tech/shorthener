@@ -1,18 +1,28 @@
 document.getElementById('shorten-form').addEventListener('submit', async function(event) {
     event.preventDefault();
 
-    const longUrl = document.getElementById('long-url').value;
+    const longUrlInput = document.getElementById('long-url').value; // Ganti nama variabel agar lebih jelas
     const resultDiv = document.getElementById('result');
     const shortUrlLink = document.getElementById('short-url');
+    const shortenButton = event.target.querySelector('button');
 
-    // Ini adalah contoh FAKE API call. Ganti dengan URL API Anda yang sebenarnya.
-    const response = await fetch('https://shortener.vercel.app/shorten', {
+    // Tampilkan status loading
+    shortenButton.textContent = 'Shortening...';
+    shortenButton.disabled = true;
+
+    // Ganti URL dengan URL Vercel Anda yang sebenarnya dan perbaiki endpoint
+    const response = await fetch('https://shorthener.vercel.app/api/shorten', {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json'
+            'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ url: longUrl })
+        // Perbaiki nama properti dari 'url' menjadi 'longUrl'
+        body: JSON.stringify({ longUrl: longUrlInput })
     });
+    
+    // Kembalikan tombol ke kondisi semula
+    shortenButton.textContent = 'Shorten';
+    shortenButton.disabled = false;
 
     if (response.ok) {
         const data = await response.json();
@@ -20,7 +30,9 @@ document.getElementById('shorten-form').addEventListener('submit', async functio
         shortUrlLink.textContent = data.shortUrl;
         resultDiv.classList.remove('hidden');
     } else {
-        alert('Failed to shorten URL. Please try again.');
+        const errorData = await response.json();
+        // Tampilkan pesan error yang lebih spesifik dari server jika ada
+        alert(`Failed to shorten URL: ${errorData.error || 'Please try again.'}`);
     }
 });
 
