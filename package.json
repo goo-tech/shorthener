@@ -1,6 +1,9 @@
 {
   "dependencies": {
-    "express": "^5.1.0"
+    "@vercel/blob": "^1.1.1",
+    "@vercel/kv": "^3.0.0",
+    "express": "^5.1.0",
+    "nanoid": "^5.1.5"
   },
   "name": "shortener",
   "version": "1.0.0",
