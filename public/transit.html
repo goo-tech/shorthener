@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mengalihkan...</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f0f2f5; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0;
+            color: #333;
+        }
+        .container { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1); 
+            text-align: center; 
+            max-width: 600px;
+            width: 90%;
+        }
+        h1 { 
+            margin-top: 0; 
+            font-size: 24px;
+            color: #1c1e21;
+        }
+        p { 
+            font-size: 16px; 
+            line-height: 1.5;
+        }
+        .destination { 
+            background-color: #e9ecef; 
+            padding: 10px 15px; 
+            border-radius: 8px; 
+            font-family: "Courier New", Courier, monospace;
+            word-wrap: break-word;
+            margin: 20px 0;
+            color: #555;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .countdown {
+            font-weight: bold;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Anda akan diarahkan</h1>
+        <p>Anda sedang meninggalkan situs ini dan menuju ke:</p>
+        <div id="destination-url" class="destination">Memuat tujuan...</div>
+        <p class="countdown">Pengalihan dalam <span id="countdown">5</span> detik...</p>
+        <p>Jika Anda tidak diarahkan secara otomatis, <a id="manual-link" href="#">klik di sini</a>.</p>
+    </div>
+
+    <script>
+        // Ambil parameter URL dari bilah alamat browser
+        const urlParams = new URLSearchParams(window.location.search);
+        const destinationUrl = urlParams.get('url');
+
+        const destinationElement = document.getElementById('destination-url');
+        const manualLink = document.getElementById('manual-link');
+        const countdownElement = document.getElementById('countdown');
+
+        if (destinationUrl) {
+            // Tampilkan URL tujuan dengan aman
+            destinationElement.textContent = destinationUrl;
+            manualLink.href = destinationUrl;
+
+            let seconds = 5;
+
+            // Redirect otomatis setelah 5 detik
+            setTimeout(() => {
+                window.location.href = destinationUrl;
+            }, 5000);
+
+            // Perbarui timer countdown setiap detik
+            const interval = setInterval(() => {
+                seconds--;
+                if (seconds >= 0) {
+                    countdownElement.textContent = seconds;
+                }
+                if (seconds < 0) {
+                    clearInterval(interval);
+                }
+            }, 1000);
+        } else {
+            // Tangani kasus jika parameter URL tidak ditemukan
+            destinationElement.textContent = 'URL tujuan tidak ditemukan.';
+            document.querySelector('.countdown').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

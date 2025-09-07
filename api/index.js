@@ -1,18 +1,15 @@
 const express = require('express');
 const path = require('path');
-// Impor ioredis, klien Redis standar
 const Redis = require('ioredis');
-// Impor nanoid v3 untuk kompatibilitas
 const { nanoid } = require('nanoid');
 
-// Membuat koneksi ke Redis Cloud.
-// ioredis akan secara otomatis membaca dan menggunakan variabel lingkungan REDIS_URL.
+// Membuat koneksi ke Redis Cloud menggunakan variabel lingkungan.
 const redis = new Redis(process.env.KV_REDIS_URL);
 
 const app = express();
 app.use(express.json());
 
-// Sajikan file front-end statis dari folder 'public'
+// Sajikan file statis (seperti index.html, style.css, dan transit.html) dari folder 'public'
 const publicPath = path.join(__dirname, '..', 'public');
 app.use(express.static(publicPath));
 
@@ -25,7 +22,6 @@ app.post('/api/shorten', async (req, res) => {
       return res.status(400).json({ error: 'longUrl wajib diisi' });
     }
     
-    // Validasi sederhana untuk memastikan itu adalah URL yang valid
     try {
       new URL(longUrl);
     } catch (_) {
@@ -48,16 +44,28 @@ app.post('/api/shorten', async (req, res) => {
   }
 });
 
-// Endpoint untuk pengalihan (redirect)
+// Endpoint untuk pengalihan ke halaman transit
 app.get('/:shortCode', async (req, res) => {
     try {
         const { shortCode } = req.params;
+        
+        // Mencegah file statis diinterpretasikan sebagai short code
+        if (['style.css', 'script.js', 'favicon.ico', 'transit.html'].includes(shortCode)) {
+            // Biarkan express.static yang menangani permintaan ini
+            // Mengirim 404 jika file tidak ditemukan oleh static handler
+            return res.status(404).end(); 
+        }
+        
         const longUrl = await redis.get(shortCode);
 
         if (longUrl) {
-            return res.redirect(301, longUrl);
+            // Arahkan pengguna ke halaman transit.html, sambil mengirimkan
+            // URL tujuan asli sebagai parameter query.
+            // encodeURIComponent sangat penting untuk menangani karakter khusus dalam URL.
+            const transitPageUrl = `/transit.html?url=${encodeURIComponent(longUrl)}`;
+            return res.redirect(transitPageUrl);
         } else {
-            // Jika tidak ditemukan, sajikan halaman utama (404)
+            // Jika short code tidak ditemukan, kembalikan pengguna ke halaman utama.
             return res.status(404).sendFile(path.join(publicPath, 'index.html'));
         }
     } catch (error) {
@@ -67,4 +75,3 @@ app.get('/:shortCode', async (req, res) => {
 });
 
 module.exports = app;
-
