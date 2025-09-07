@@ -7,7 +7,7 @@ const { nanoid } = require('nanoid');
 
 // Membuat koneksi ke Redis Cloud.
 // ioredis akan secara otomatis membaca dan menggunakan variabel lingkungan REDIS_URL.
-const redis = new Redis(process.env.REDIS_URL);
+const redis = new Redis(process.env.KV_REDIS_URL);
 
 const app = express();
 app.use(express.json());
