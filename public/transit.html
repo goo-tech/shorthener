@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-adsense-account" content="ca-pub-8526606076277673">
     <meta content="/images/logo.png" property="og:image">
-    <title>Pemendek URL</title>
+    <!-- Meta deskripsi fallback, akan diperbarui oleh JavaScript -->
+    <meta name="description" content="Anda sedang dialihkan ke halaman tujuan.">
+    <!-- Judul fallback, akan diperbarui oleh JavaScript -->
+    <title>Mengalihkan Anda...</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,15 +39,12 @@
     </header>
     <main>
         <div class="container">
-            <!-- Elemen untuk judul halaman tujuan -->
             <h1 id="page-title">Memuat Informasi Halaman...</h1>
-            <!-- Elemen untuk deskripsi halaman tujuan -->
             <p id="page-description" class="description subtitle"></p>
             
             <p>Anda akan diarahkan ke tujuan berikut:</p>
             <div id="destination-url" class="destination">Memuat URL...</div>
 
-            <!-- Countdown 15 detik -->
             <p class="countdown">Pengalihan dalam <span id="countdown">15</span> detik...</p>
             <p>Jika Anda tidak diarahkan secara otomatis, <a id="manual-link" href="#">klik di sini</a>. </p>
         </div>
@@ -67,8 +67,24 @@
         const countdownElement = document.getElementById('countdown');
 
         if (destinationUrl) {
+            // --- LOGIKA BARU UNTUK MENGUBAH META TAG ---
+            // 1. Mengubah judul halaman
+            if (title) {
+                document.title = title;
+            }
+
+            // 2. Mengubah meta deskripsi
+            if (description) {
+                let metaDesc = document.querySelector('meta[name="description"]');
+                if (metaDesc) {
+                    metaDesc.setAttribute('content', description);
+                }
+            }
+            // --- AKHIR DARI LOGIKA BARU ---
+
+            // Menampilkan informasi di badan halaman
             titleElement.textContent = title || 'Judul Tidak Tersedia';
-            descriptionElement.textContent = description || '';
+            descriptionElement.textContent = description || 'Deskripsi tidak tersedia.';
             destinationElement.textContent = destinationUrl;
             manualLink.href = destinationUrl;
 
