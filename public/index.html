@@ -23,7 +23,20 @@
      crossorigin="anonymous"></script>
 </head>
 <body>
-    <div class="container">
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <a href="/">URL Shorthener</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#">Fitur</a></li>
+                <li><a href="#">Harga</a></li>
+                <li><a href="#">Kontak</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="container">
         <h1>Pemendek URL Sederhana</h1>
         <p class="subtitle">Tempelkan URL panjang untuk membuatnya lebih singkat dan mudah dibagikan.</p>
         
@@ -40,9 +53,11 @@
             </div>
         </div>
         <div id="error-message" class="text-error hidden"></div>
-        <p class="subtitle">Made with ❤️ by <a href="//gootech.my.id">GooTech</a></p>
-    
     </div>
+    </main>
+    <aside>
+        <p class="subtitle">Made with ❤️ by <a href="//gootech.my.id">GooTech</a></p>
+    </aside>
     <script src="script.js"></script>
 </body>
 </html>

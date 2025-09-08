@@ -2,18 +2,18 @@ const express = require('express');
 const path = require('path');
 const Redis = require('ioredis');
 const { nanoid } = require('nanoid');
+// Impor cheerio untuk parsing HTML
+const cheerio = require('cheerio');
 
-// Membuat koneksi ke Redis Cloud menggunakan variabel lingkungan.
 const redis = new Redis(process.env.KV_REDIS_URL);
 
 const app = express();
 app.use(express.json());
 
-// Sajikan file statis (seperti index.html, style.css, dan transit.html) dari folder 'public'
 const publicPath = path.join(__dirname, '..', 'public');
 app.use(express.static(publicPath));
 
-// Endpoint API untuk membuat URL pendek
+// --- PERUBAHAN PADA ENDPOINT /api/shorten ---
 app.post('/api/shorten', async (req, res) => {
   try {
     const { longUrl } = req.body;
@@ -22,14 +22,33 @@ app.post('/api/shorten', async (req, res) => {
       return res.status(400).json({ error: 'longUrl wajib diisi' });
     }
     
+    let title = 'Judul tidak tersedia';
+    let description = 'Deskripsi tidak tersedia.';
+
     try {
-      new URL(longUrl);
-    } catch (_) {
-      return res.status(400).json({ error: 'Format URL tidak valid' });
+      // Fetch konten dari URL tujuan untuk mendapatkan metadata
+      const response = await fetch(longUrl);
+      if (response.ok) {
+        const html = await response.text();
+        const $ = cheerio.load(html);
+        
+        title = $('title').text() || title;
+        description = $('meta[name="description"]').attr('content') || description;
+      }
+    } catch (fetchError) {
+      console.warn(`Gagal mengambil metadata untuk ${longUrl}:`, fetchError.message);
+      // Jika fetch gagal, kita tetap lanjutkan tanpa metadata
     }
 
     const shortCode = nanoid(7);
-    await redis.set(shortCode, longUrl);
+    
+    // Simpan data sebagai objek JSON yang di-string-kan
+    const dataToStore = {
+      longUrl,
+      title,
+      description
+    };
+    await redis.set(shortCode, JSON.stringify(dataToStore));
 
     const host = req.headers['x-forwarded-host'] || req.headers.host;
     const protocol = process.env.VERCEL_URL ? 'https' : 'http';
@@ -44,28 +63,26 @@ app.post('/api/shorten', async (req, res) => {
   }
 });
 
-// Endpoint untuk pengalihan ke halaman transit
+// --- PERUBAHAN PADA ENDPOINT /:shortCode ---
 app.get('/:shortCode', async (req, res) => {
     try {
         const { shortCode } = req.params;
         
-        // Mencegah file statis diinterpretasikan sebagai short code
         if (['style.css', 'script.js', 'favicon.ico', 'transit.html'].includes(shortCode)) {
-            // Biarkan express.static yang menangani permintaan ini
-            // Mengirim 404 jika file tidak ditemukan oleh static handler
             return res.status(404).end(); 
         }
         
-        const longUrl = await redis.get(shortCode);
+        // Ambil data JSON dari Redis
+        const jsonData = await redis.get(shortCode);
 
-        if (longUrl) {
-            // Arahkan pengguna ke halaman transit.html, sambil mengirimkan
-            // URL tujuan asli sebagai parameter query.
-            // encodeURIComponent sangat penting untuk menangani karakter khusus dalam URL.
-            const transitPageUrl = `/transit.html?url=${encodeURIComponent(longUrl)}`;
+        if (jsonData) {
+            // Parse data JSON kembali menjadi objek
+            const data = JSON.parse(jsonData);
+
+            // Kirim semua data (url, title, description) sebagai parameter
+            const transitPageUrl = `/transit.html?url=${encodeURIComponent(data.longUrl)}&title=${encodeURIComponent(data.title)}&description=${encodeURIComponent(data.description)}`;
             return res.redirect(transitPageUrl);
         } else {
-            // Jika short code tidak ditemukan, kembalikan pengguna ke halaman utama.
             return res.status(404).sendFile(path.join(publicPath, 'index.html'));
         }
     } catch (error) {

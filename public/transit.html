@@ -69,36 +69,63 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Anda akan diarahkan</h1>
-        <p>Anda sedang meninggalkan situs ini dan menuju ke:</p>
-        <div id="destination-url" class="destination">Memuat tujuan...</div>
-        <p class="countdown">Pengalihan dalam <span id="countdown">5</span> detik...</p>
-        <p>Jika Anda tidak diarahkan secara otomatis, <a id="manual-link" href="#">klik di sini</a>. Simplified url by <a href="//gootech.my.id/?utm_source=shortener" target="_blank">GooTech</a></p>
-    </div>
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <a href="/">URL Shorthener</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#">Fitur</a></li>
+                <li><a href="#">Harga</a></li>
+                <li><a href="#">Kontak</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="container">
+            <!-- Elemen untuk judul halaman tujuan -->
+            <h1 id="page-title">Memuat Informasi Halaman...</h1>
+            <!-- Elemen untuk deskripsi halaman tujuan -->
+            <p id="page-description" class="description subtitle"></p>
+            
+            <p>Anda akan diarahkan ke tujuan berikut:</p>
+            <div id="destination-url" class="destination">Memuat URL...</div>
+
+            <!-- Countdown 15 detik -->
+            <p class="countdown">Pengalihan dalam <span id="countdown">15</span> detik...</p>
+            <p>Jika Anda tidak diarahkan secara otomatis, <a id="manual-link" href="#">klik di sini</a>. </p>
+        </div>
+    </main>
+    <aside>
+        <p class="subtitle">Made with ❤️ by <a href="//gootech.my.id">GooTech</a></p>
+    </aside>
 
     <script>
-        // Ambil parameter URL dari bilah alamat browser
         const urlParams = new URLSearchParams(window.location.search);
+        
         const destinationUrl = urlParams.get('url');
+        const title = urlParams.get('title');
+        const description = urlParams.get('description');
 
+        const titleElement = document.getElementById('page-title');
+        const descriptionElement = document.getElementById('page-description');
         const destinationElement = document.getElementById('destination-url');
         const manualLink = document.getElementById('manual-link');
         const countdownElement = document.getElementById('countdown');
 
         if (destinationUrl) {
-            // Tampilkan URL tujuan dengan aman
+            titleElement.textContent = title || 'Judul Tidak Tersedia';
+            descriptionElement.textContent = description || '';
             destinationElement.textContent = destinationUrl;
             manualLink.href = destinationUrl;
 
-            let seconds = 5;
+            let seconds = 15;
+            countdownElement.textContent = seconds;
 
-            // Redirect otomatis setelah 5 detik
             setTimeout(() => {
                 window.location.href = destinationUrl;
-            }, 5000);
+            }, 15000);
 
-            // Perbarui timer countdown setiap detik
             const interval = setInterval(() => {
                 seconds--;
                 if (seconds >= 0) {
@@ -109,7 +136,7 @@
                 }
             }, 1000);
         } else {
-            // Tangani kasus jika parameter URL tidak ditemukan
+            titleElement.textContent = 'URL Tujuan Tidak Valid';
             destinationElement.textContent = 'URL tujuan tidak ditemukan.';
             document.querySelector('.countdown').style.display = 'none';
         }
