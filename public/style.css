@@ -35,16 +35,43 @@ h1 {
 
 #shorten-form {
     display: flex;
-    gap: 10px;
+    /* Mengubah arah tumpukan elemen menjadi vertikal (kolom) */
+    flex-direction: column;
+    gap: 15px; /* Memberi jarak vertikal antara input dan tombol */
 }
 
 #long-url {
-    flex-grow: 1;
+    width: 100%;
     padding: 12px 15px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    font-size: 1rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    font-size: 16px;
+    box-sizing: border-box; /* Agar padding tidak mempengaruhi lebar total */
+}
+
+#shorten-form button {
+    width: 100%; /* Tombol mengisi lebar penuh */
+    padding: 12px 20px;
+    border: none;
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#shorten-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+#shorten-form button:disabled {
+    background: #aab8c5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 #long-url:focus {
