@@ -33,27 +33,33 @@
                 <li><a href="#">Harga</a></li>
                 <li><a href="#">Kontak</a></li>
             </ul>
+            <!-- Tombol Hamburger untuk Mobile -->
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
         </nav>
     </header>
     <main>
         <div class="container">
-        <h1>Pemendek URL Sederhana</h1>
-        <p class="subtitle">Tempelkan URL panjang untuk membuatnya lebih singkat dan mudah dibagikan.</p>
-        
-        <form id="shorten-form">
-            <input type="url" id="long-url" placeholder="Contoh: https://contoh.url/yang/sangat-panjang" required>
-            <button type="submit">Pendekkan</button>
-        </form>
-        
-        <div id="result" class="hidden">
-            <p>URL pendek Anda:</p>
-            <div class="short-url-container">
-                <a href="" id="short-url" target="_blank"></a>
-                <button id="copy-btn">Salin</button>
+            <h1>Pemendek URL Sederhana</h1>
+            <p class="subtitle">Tempelkan URL panjang untuk membuatnya lebih singkat dan mudah dibagikan.</p>
+            
+            <form id="shorten-form">
+                <input type="url" id="long-url" placeholder="Contoh: https://contoh.url/yang/sangat-panjang" required>
+                <button type="submit">Pendekkan</button>
+            </form>
+            
+            <div id="result" class="hidden">
+                <p>URL pendek Anda:</p>
+                <div class="short-url-container">
+                    <a href="" id="short-url" target="_blank"></a>
+                    <button id="copy-btn">Salin</button>
+                </div>
             </div>
+            <div id="error-message" class="text-error hidden"></div>
         </div>
-        <div id="error-message" class="text-error hidden"></div>
-    </div>
     </main>
     <aside>
         <p class="subtitle">Made with ❤️ by <a href="//gootech.my.id">GooTech</a></p>
@@ -61,3 +67,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
