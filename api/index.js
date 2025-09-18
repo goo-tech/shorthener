@@ -6,6 +6,7 @@ const cheerio = require('cheerio');
 const QRCode = require('qrcode');
 
 const redis = new Redis(process.env.KV_REDIS_URL || process.env.REDIS_URL);
+const RECENT_URLS_KEY = 'recent_urls';
 
 const app = express();
 app.use(express.json());
@@ -28,14 +29,11 @@ app.post('/api/shorten', async (req, res) => {
       new URL(longUrl);
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
-
       const response = await fetch(longUrl, {
         signal: controller.signal,
         headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' }
       });
-      
       clearTimeout(timeoutId);
-
       if (response.ok) {
         const html = await response.text();
         const $ = cheerio.load(html);
@@ -51,6 +49,10 @@ app.post('/api/shorten', async (req, res) => {
     const shortCode = nanoid(7);
     await redis.set(shortCode, JSON.stringify({ longUrl, title, description, ogImage }));
 
+    const recentEntry = { shortCode, title, createdAt: new Date().toISOString() };
+    await redis.lpush(RECENT_URLS_KEY, JSON.stringify(recentEntry));
+    await redis.ltrim(RECENT_URLS_KEY, 0, 9);
+
     const host = req.headers['x-forwarded-host'] || req.headers.host;
     const protocol = process.env.VERCEL_URL ? 'https' : 'http';
     const shortUrl = `${protocol}://${host}/${shortCode}`;
@@ -59,6 +61,26 @@ app.post('/api/shorten', async (req, res) => {
     console.error('API Error:', error);
     return res.status(500).json({ error: 'Terjadi kesalahan internal pada server' });
   }
+});
+
+app.get('/api/recent', async (req, res) => {
+    try {
+        const recentJsonStrings = await redis.lrange(RECENT_URLS_KEY, 0, 4);
+        const host = req.headers['x-forwarded-host'] || req.headers.host;
+        const protocol = process.env.VERCEL_URL ? 'https' : 'http';
+        const baseUrl = `${protocol}://${host}`;
+        const recentUrls = recentJsonStrings.map(jsonString => {
+            const entry = JSON.parse(jsonString);
+            return {
+                shortUrl: `${baseUrl}/${entry.shortCode}`,
+                title: entry.title
+            };
+        });
+        return res.status(200).json({ recentUrls });
+    } catch (error) {
+        console.error('Recent URLs Fetch Error:', error);
+        return res.status(500).json({ error: 'Gagal mengambil URL terbaru.' });
+    }
 });
 
 app.get('/:shortCode/qr', async (req, res) => {
@@ -71,7 +93,7 @@ app.get('/:shortCode/qr', async (req, res) => {
         const host = req.headers['x-forwarded-host'] || req.headers.host;
         const protocol = process.env.VERCEL_URL ? 'https' : 'http';
         const shortUrl = `${protocol}://${host}/${shortCode}`;
-        const qrOptions = { type: 'png', width: 256, margin: 2, errorCorrectionLevel: 'H' };
+        const qrOptions = { type: 'png', width: 600, margin: 2, errorCorrectionLevel: 'H' };
         const qrCodeBuffer = await QRCode.toBuffer(shortUrl, qrOptions);
         res.setHeader('Content-Type', 'image/png');
         res.send(qrCodeBuffer);
@@ -83,8 +105,11 @@ app.get('/:shortCode/qr', async (req, res) => {
 
 app.get('/:shortCode', async (req, res) => {
     try {
+        const userAgent = (req.headers['user-agent'] || '').toLowerCase();
+        console.log(`[LOG] User-Agent terdeteksi: ${userAgent}`);
+
         const { shortCode } = req.params;
-        const staticPages = ['terms', 'privacy', 'dmca', 'transit'];
+        const staticPages = ['terms', 'privacy', 'dmca', 'transit', 'recent'];
         if (shortCode.includes('.') || staticPages.includes(shortCode)) {
             return res.status(404).sendFile(path.join(publicPath, 'index.html'));
         }
@@ -98,7 +123,6 @@ app.get('/:shortCode', async (req, res) => {
         const { longUrl, title, description, ogImage } = data;
 
         const botUserAgents = ['facebookexternalhit', 'twitterbot', 'linkedinbot', 'discordbot', 'pinterest', 'whatsapp', 'telegrambot'];
-        const userAgent = (req.headers['user-agent'] || '').toLowerCase();
         const isBot = botUserAgents.some(bot => userAgent.includes(bot));
 
         const host = req.headers['x-forwarded-host'] || req.headers.host;
@@ -118,13 +142,12 @@ app.get('/:shortCode', async (req, res) => {
                     <meta property="og:image:width" content="600">
                     <meta property="og:image:height" content="600">
                     <meta name="twitter:card" content="summary_large_image">
-                </head><body><p>Redirecting to <a href="${longUrl}">${longUrl}</a></p></body></html>
+                </head><body><p>Ini adalah halaman pratinjau untuk URL pendek. Anda dapat mengunjungi tautan aslinya di <a href="${longUrl}">${longUrl}</a>.</p></body></html>
             `;
             return res.status(200).setHeader('Content-Type', 'text/html').send(html);
         }
 
-        const qrCodeDataUri = await QRCode.toDataURL(shortUrl, { errorCorrectionLevel: 'H' });
-        const params = new URLSearchParams({ url: longUrl, title, description, qr: qrCodeDataUri });
+        const params = new URLSearchParams({ url: longUrl, title, description });
         if (ogImage) {
             params.append('image', ogImage);
         }
