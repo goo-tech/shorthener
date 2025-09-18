@@ -1,3 +1,4 @@
+// Logika untuk tombol hamburger menu
 document.addEventListener('DOMContentLoaded', () => {
     const hamburger = document.querySelector(".hamburger");
     const navLinks = document.querySelector(".nav-links");
@@ -10,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Logika untuk form pemendek URL
 const shortenForm = document.getElementById('shorten-form');
 if (shortenForm) {
     shortenForm.addEventListener('submit', async function(event) {
@@ -20,10 +22,14 @@ if (shortenForm) {
         const shortUrlLink = document.getElementById('short-url');
         const shortenButton = event.target.querySelector('button');
         const errorMessageDiv = document.getElementById('error-message');
+        const qrImage = document.getElementById('qr-code-image');
+        const downloadBtn = document.getElementById('download-qr-btn');
 
         resultDiv.classList.add('hidden');
         errorMessageDiv.classList.add('hidden');
         errorMessageDiv.textContent = '';
+        qrImage.classList.add('hidden');
+        downloadBtn.classList.add('hidden');
 
         shortenButton.textContent = 'Memendekkan...';
         shortenButton.disabled = true;
@@ -39,15 +45,14 @@ if (shortenForm) {
                 const data = await response.json();
                 shortUrlLink.href = data.shortUrl;
                 shortUrlLink.textContent = data.shortUrl;
+                
+                const qrCodeImageUrl = `${data.shortUrl}/qr`;
+                qrImage.src = qrCodeImageUrl;
+                downloadBtn.href = qrCodeImageUrl;
+                
                 resultDiv.classList.remove('hidden');
-
-                const qrCanvas = document.getElementById('qr-code-canvas');
-                const downloadBtn = document.getElementById('download-qr-btn');
-                QRCode.toCanvas(qrCanvas, data.shortUrl, { width: 300 }, function (error) {
-                    if (error) console.error(error);
-                    downloadBtn.href = qrCanvas.toDataURL('image/png');
-                });
-
+                qrImage.classList.remove('hidden');
+                downloadBtn.classList.remove('hidden');
             } else {
                 const errorData = await response.json();
                 errorMessageDiv.textContent = `Gagal: ${errorData.error || 'Terjadi kesalahan.'}`;
@@ -63,6 +68,7 @@ if (shortenForm) {
     });
 }
 
+// Logika untuk tombol salin
 const copyBtn = document.getElementById('copy-btn');
 if (copyBtn) {
     copyBtn.addEventListener('click', function() {

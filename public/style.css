@@ -10,7 +10,7 @@ body {
     min-height: 100vh;
 }
 
-/* --- Navigasi --- */
+/* --- Gaya untuk Navigasi --- */
 .header {
     background: white;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -43,7 +43,6 @@ body {
     gap: 30px;
     margin: 0;
     padding: 0;
-    align-items: center;
 }
 
 .nav-links a {
@@ -67,17 +66,21 @@ body {
     width: 25px;
     height: 3px;
     margin: 5px auto;
+    -webkit-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
     background-color: #333;
 }
 
-/* Konten Utama */
+/* Mengatur konten utama agar fleksibel */
 main {
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 100px 20px 40px;
+    padding-top: 100px; /* Lebih banyak ruang untuk header */
+    padding-bottom: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
     box-sizing: border-box;
     width: 100%;
 }
@@ -105,7 +108,6 @@ h1 {
     line-height: 1.5;
 }
 
-/* Form */
 #shorten-form {
     display: flex;
     flex-direction: column;
@@ -146,7 +148,6 @@ h1 {
     box-shadow: none;
 }
 
-/* Hasil & QR Code */
 #result {
     margin-top: 30px;
     text-align: left;
@@ -186,6 +187,17 @@ h1 {
     flex-shrink: 0;
 }
 
+.text-error {
+    color: #dc3545;
+    font-weight: bold;
+    margin-top: 15px;
+    text-align: center;
+}
+
+.hidden {
+    display: none !important;
+}
+
 .qr-code-container {
     margin-top: 25px;
     padding-top: 25px;
@@ -196,9 +208,11 @@ h1 {
     gap: 15px;
 }
 
-#qr-code-canvas {
+#qr-code-image {
     border: 1px solid #ddd;
     border-radius: 8px;
+    width: 180px;
+    height: 180px;
 }
 
 .button-download {
@@ -211,50 +225,25 @@ h1 {
     font-weight: bold;
     transition: background-color 0.3s;
 }
-
 .button-download:hover {
     background-color: #138496;
 }
 
-.text-error {
-    color: #dc3545;
-    font-weight: bold;
-    margin-top: 15px;
-    text-align: center;
+/* Gaya untuk Halaman Transit */
+#preview-image {
+    width: 100%;
+    max-height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #eee;
 }
-
-.hidden {
-    display: none;
-}
-
-/* Halaman Transit & Statis */
-.content-page {
-    text-align: left;
-}
-
-.content-page h2 {
-    margin-top: 30px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
-}
-
-.content-page ul {
-    padding-left: 20px;
-}
-
-.last-updated {
-    font-size: 14px;
-    color: #888;
-    margin-bottom: 30px;
-}
-
 #page-description.description {
     border-top: 1px solid #eee;
     padding-top: 20px;
     margin-top: 20px;
     font-size: 14px;
 }
-
 .destination { 
     background-color: #f8f9fa; 
     padding: 12px 15px; 
@@ -266,14 +255,29 @@ h1 {
     text-align: left;
     border: 1px solid #eee;
 }
-
 .countdown {
     font-weight: bold;
     font-size: 18px;
     margin-top: 25px;
 }
 
-/* Footer */
+/* Gaya untuk Halaman Statis (Terms, Privacy, DMCA) */
+.container.static-page {
+    text-align: left;
+    max-width: 800px;
+}
+.static-page h2 {
+    margin-top: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+.static-page ul {
+    padding-left: 20px;
+}
+.static-page li {
+    margin-bottom: 10px;
+}
+
 aside {
     width: 100%;
     padding: 20px;
@@ -288,20 +292,19 @@ aside a {
     text-decoration: none;
     font-weight: 500;
 }
-
 aside a:hover {
     text-decoration: underline;
 }
 
-/* Media Query untuk Mobile */
+/* Media Query untuk Navigasi Responsif */
 @media (max-width: 768px) {
     .nav-links {
         position: fixed;
-        right: -100%;
-        top: 65px; /* Sesuaikan dengan tinggi header */
+        left: -100%;
+        top: 70px;
         gap: 0;
         flex-direction: column;
-        background-color: white;
+        background-color: #fff;
         width: 100%;
         text-align: center;
         transition: 0.3s;
@@ -309,11 +312,16 @@ aside a:hover {
     }
 
     .nav-links.active {
-        right: 0;
+        left: 0;
     }
 
     .nav-links li {
         padding: 15px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .nav-links li:last-child {
+        border-bottom: none;
     }
 
     .hamburger {
@@ -331,4 +339,10 @@ aside a:hover {
     .hamburger.active .bar:nth-child(3) {
         transform: translateY(-8px) rotate(-45deg);
     }
+    
+    .container {
+        padding: 20px;
+    }
 }
+
+
