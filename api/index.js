@@ -106,8 +106,7 @@ app.get('/:shortCode', async (req, res) => {
         const shortUrl = `${protocol}://${host}/${shortCode}`;
 
         if (isBot) {
-            const qrOptions = { errorCorrectionLevel: 'H', type: 'image/png', width: 600, margin: 2 };
-            const qrCodeDataUri = await QRCode.toDataURL(shortUrl, qrOptions);
+            const qrCodeImageUrl = `${shortUrl}/qr`;
             const html = `
                 <!DOCTYPE html><html lang="id"><head>
                     <title>${title.replace(/"/g, '&quot;')}</title>
@@ -115,7 +114,7 @@ app.get('/:shortCode', async (req, res) => {
                     <meta property="og:title" content="${title.replace(/"/g, '&quot;')}">
                     <meta property="og:description" content="${description.replace(/"/g, '&quot;')}">
                     <meta property="og:url" content="${shortUrl}">
-                    <meta property="og:image" content="${qrCodeDataUri}">
+                    <meta property="og:image" content="${qrCodeImageUrl}">
                     <meta property="og:image:width" content="600">
                     <meta property="og:image:height" content="600">
                     <meta name="twitter:card" content="summary_large_image">
