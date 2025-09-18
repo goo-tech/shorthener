@@ -119,7 +119,6 @@ app.get('/:shortCode', async (req, res) => {
                     <meta property="og:image:width" content="600">
                     <meta property="og:image:height" content="600">
                     <meta name="twitter:card" content="summary_large_image">
-                    <meta http-equiv="refresh" content="0; url=${longUrl}">
                 </head><body><p>Redirecting to <a href="${longUrl}">${longUrl}</a></p></body></html>
             `;
             return res.status(200).setHeader('Content-Type', 'text/html').send(html);
