@@ -6,11 +6,11 @@ body {
     padding: 0;
     box-sizing: border-box;
     display: flex;
-    flex-direction: column; /* Mengatur layout utama menjadi kolom */
+    flex-direction: column;
     min-height: 100vh;
 }
 
-/* --- Gaya untuk Navigasi --- */
+/* --- Navigasi --- */
 .header {
     background: white;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -57,7 +57,6 @@ body {
     color: #007bff;
 }
 
-/* Tombol Hamburger */
 .hamburger {
     display: none;
     cursor: pointer;
@@ -68,7 +67,6 @@ body {
     width: 25px;
     height: 3px;
     margin: 5px auto;
-    -webkit-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
     background-color: #333;
 }
@@ -79,9 +77,7 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-top: 70px; 
-    padding-left: 20px;
-    padding-right: 20px;
+    padding: 100px 20px 40px;
     box-sizing: border-box;
     width: 100%;
 }
@@ -109,7 +105,7 @@ h1 {
     line-height: 1.5;
 }
 
-/* Form Pemendek */
+/* Form */
 #shorten-form {
     display: flex;
     flex-direction: column;
@@ -150,7 +146,7 @@ h1 {
     box-shadow: none;
 }
 
-/* Area Hasil */
+/* Hasil & QR Code */
 #result {
     margin-top: 30px;
     text-align: left;
@@ -190,6 +186,36 @@ h1 {
     flex-shrink: 0;
 }
 
+.qr-code-container {
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+#qr-code-canvas {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.button-download {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #17a2b8;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.button-download:hover {
+    background-color: #138496;
+}
+
 .text-error {
     color: #dc3545;
     font-weight: bold;
@@ -201,7 +227,27 @@ h1 {
     display: none;
 }
 
-/* Gaya Halaman Transit */
+/* Halaman Transit & Statis */
+.content-page {
+    text-align: left;
+}
+
+.content-page h2 {
+    margin-top: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.content-page ul {
+    padding-left: 20px;
+}
+
+.last-updated {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 30px;
+}
+
 #page-description.description {
     border-top: 1px solid #eee;
     padding-top: 20px;
@@ -252,7 +298,7 @@ aside a:hover {
     .nav-links {
         position: fixed;
         right: -100%;
-        top: 70px;
+        top: 65px; /* Sesuaikan dengan tinggi header */
         gap: 0;
         flex-direction: column;
         background-color: white;

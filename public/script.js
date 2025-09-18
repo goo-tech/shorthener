@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const hamburger = document.querySelector(".hamburger");
     const navLinks = document.querySelector(".nav-links");
 
-    // Pastikan elemen ditemukan sebelum menambahkan event listener
     if (hamburger && navLinks) {
         hamburger.addEventListener("click", () => {
             hamburger.classList.toggle("active");
@@ -12,17 +11,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Logika untuk form pemendek URL
-const shortenForm = document.getElementById('shorten-form');
-if (shortenForm) {
-    shortenForm.addEventListener('submit', async function(event) {
+// Logika ini hanya untuk halaman utama (index.html)
+if (document.getElementById('shorten-form')) {
+    document.getElementById('shorten-form').addEventListener('submit', async function(event) {
         event.preventDefault();
 
         const longUrlInput = document.getElementById('long-url').value;
         const resultDiv = document.getElementById('result');
         const shortUrlLink = document.getElementById('short-url');
         const shortenButton = event.target.querySelector('button');
-        
         const errorMessageDiv = document.getElementById('error-message');
 
         resultDiv.classList.add('hidden');
@@ -46,6 +43,15 @@ if (shortenForm) {
                 shortUrlLink.href = data.shortUrl;
                 shortUrlLink.textContent = data.shortUrl;
                 resultDiv.classList.remove('hidden');
+
+                const qrCanvas = document.getElementById('qr-code-canvas');
+                const downloadBtn = document.getElementById('download-qr-btn');
+                
+                QRCode.toCanvas(qrCanvas, data.shortUrl, { width: 180 }, function (error) {
+                    if (error) console.error(error);
+                    downloadBtn.href = qrCanvas.toDataURL('image/png');
+                });
+
             } else {
                 const errorData = await response.json();
                 errorMessageDiv.textContent = `Gagal: ${errorData.error || 'Terjadi kesalahan.'}`;
@@ -59,13 +65,8 @@ if (shortenForm) {
             shortenButton.disabled = false;
         }
     });
-}
 
-
-// Logika untuk tombol salin
-const copyBtn = document.getElementById('copy-btn');
-if(copyBtn) {
-    copyBtn.addEventListener('click', function() {
+    document.getElementById('copy-btn').addEventListener('click', function() {
         const shortUrl = document.getElementById('short-url').textContent;
         if (navigator.clipboard) {
             navigator.clipboard.writeText(shortUrl).then(() => {
@@ -82,4 +83,3 @@ if(copyBtn) {
         }
     });
 }
-

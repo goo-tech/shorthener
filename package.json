@@ -9,6 +9,7 @@
     "cheerio": "^1.0.0-rc.12",
     "express": "^4.19.2",
     "ioredis": "^5.4.1",
-    "nanoid": "^3.3.7"
+    "nanoid": "^3.3.7",
+    "qrcode": "^1.5.3"
   }
 }
