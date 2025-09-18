@@ -1,4 +1,3 @@
-// Logika untuk tombol hamburger menu
 document.addEventListener('DOMContentLoaded', () => {
     const hamburger = document.querySelector(".hamburger");
     const navLinks = document.querySelector(".nav-links");
@@ -11,9 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Logika ini hanya untuk halaman utama (index.html)
-if (document.getElementById('shorten-form')) {
-    document.getElementById('shorten-form').addEventListener('submit', async function(event) {
+const shortenForm = document.getElementById('shorten-form');
+if (shortenForm) {
+    shortenForm.addEventListener('submit', async function(event) {
         event.preventDefault();
 
         const longUrlInput = document.getElementById('long-url').value;
@@ -32,9 +31,7 @@ if (document.getElementById('shorten-form')) {
         try {
             const response = await fetch('/api/shorten', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ longUrl: longUrlInput })
             });
 
@@ -46,8 +43,7 @@ if (document.getElementById('shorten-form')) {
 
                 const qrCanvas = document.getElementById('qr-code-canvas');
                 const downloadBtn = document.getElementById('download-qr-btn');
-                
-                QRCode.toCanvas(qrCanvas, data.shortUrl, { width: 180 }, function (error) {
+                QRCode.toCanvas(qrCanvas, data.shortUrl, { width: 300 }, function (error) {
                     if (error) console.error(error);
                     downloadBtn.href = qrCanvas.toDataURL('image/png');
                 });
@@ -65,8 +61,11 @@ if (document.getElementById('shorten-form')) {
             shortenButton.disabled = false;
         }
     });
+}
 
-    document.getElementById('copy-btn').addEventListener('click', function() {
+const copyBtn = document.getElementById('copy-btn');
+if (copyBtn) {
+    copyBtn.addEventListener('click', function() {
         const shortUrl = document.getElementById('short-url').textContent;
         if (navigator.clipboard) {
             navigator.clipboard.writeText(shortUrl).then(() => {
