@@ -5,7 +5,6 @@ const { nanoid } = require('nanoid');
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
 
-// Menggunakan KV_REDIS_URL atau REDIS_URL sebagai fallback untuk fleksibilitas
 const redis = new Redis(process.env.KV_REDIS_URL || process.env.REDIS_URL);
 
 const app = express();
@@ -28,7 +27,7 @@ app.post('/api/shorten', async (req, res) => {
     try {
       new URL(longUrl);
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout 5 detik
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
 
       const response = await fetch(longUrl, {
         signal: controller.signal,
@@ -62,18 +61,18 @@ app.post('/api/shorten', async (req, res) => {
   }
 });
 
-// Rute baru untuk menampilkan gambar QR code
 app.get('/:shortCode/qr', async (req, res) => {
     try {
         const { shortCode } = req.params;
         const jsonData = await redis.get(shortCode);
-        if (!jsonData) return res.status(404).send('Short URL Not Found');
-        
+        if (!jsonData) {
+            return res.status(404).send('Short URL Not Found');
+        }
         const host = req.headers['x-forwarded-host'] || req.headers.host;
         const protocol = process.env.VERCEL_URL ? 'https' : 'http';
         const shortUrl = `${protocol}://${host}/${shortCode}`;
-        
-        const qrCodeBuffer = await QRCode.toBuffer(shortUrl, { type: 'png', errorCorrectionLevel: 'H', margin: 2, width: 256 });
+        const qrOptions = { type: 'png', width: 256, margin: 2, errorCorrectionLevel: 'H' };
+        const qrCodeBuffer = await QRCode.toBuffer(shortUrl, qrOptions);
         res.setHeader('Content-Type', 'image/png');
         res.send(qrCodeBuffer);
     } catch (error) {
@@ -82,13 +81,12 @@ app.get('/:shortCode/qr', async (req, res) => {
     }
 });
 
-// Rute utama untuk pengalihan
 app.get('/:shortCode', async (req, res) => {
     try {
         const { shortCode } = req.params;
-        const staticFiles = ['style.css', 'script.js', 'transit.js', 'favicon.ico', 'transit.html', 'terms.html', 'privacy.html', 'dmca.html'];
-        if (staticFiles.some(file => shortCode.startsWith(file))) {
-             return res.status(404).end();
+        const staticPages = ['terms', 'privacy', 'dmca', 'transit'];
+        if (shortCode.includes('.') || staticPages.includes(shortCode)) {
+            return res.status(404).sendFile(path.join(publicPath, 'index.html'));
         }
 
         const jsonData = await redis.get(shortCode);
@@ -108,15 +106,18 @@ app.get('/:shortCode', async (req, res) => {
         const shortUrl = `${protocol}://${host}/${shortCode}`;
 
         if (isBot) {
-            const qrCodeDataUri = await QRCode.toDataURL(shortUrl, { errorCorrectionLevel: 'H' });
+            const qrOptions = { errorCorrectionLevel: 'H', type: 'image/png', width: 600, margin: 2 };
+            const qrCodeDataUri = await QRCode.toDataURL(shortUrl, qrOptions);
             const html = `
                 <!DOCTYPE html><html lang="id"><head>
                     <title>${title.replace(/"/g, '&quot;')}</title>
                     <meta name="description" content="${description.replace(/"/g, '&quot;')}">
                     <meta property="og:title" content="${title.replace(/"/g, '&quot;')}">
                     <meta property="og:description" content="${description.replace(/"/g, '&quot;')}">
-                    <meta property="og:url" content="${longtUrl}">
+                    <meta property="og:url" content="${shortUrl}">
                     <meta property="og:image" content="${qrCodeDataUri}">
+                    <meta property="og:image:width" content="600">
+                    <meta property="og:image:height" content="600">
                     <meta name="twitter:card" content="summary_large_image">
                     <meta http-equiv="refresh" content="0; url=${longUrl}">
                 </head><body><p>Redirecting to <a href="${longUrl}">${longUrl}</a></p></body></html>
@@ -125,12 +126,7 @@ app.get('/:shortCode', async (req, res) => {
         }
 
         const qrCodeDataUri = await QRCode.toDataURL(shortUrl, { errorCorrectionLevel: 'H' });
-        const params = new URLSearchParams({
-            url: longUrl,
-            title: title,
-            description: description,
-            qr: qrCodeDataUri
-        });
+        const params = new URLSearchParams({ url: longUrl, title, description, qr: qrCodeDataUri });
         if (ogImage) {
             params.append('image', ogImage);
         }
