@@ -1,4 +1,48 @@
-// Logika untuk menu hamburger
+function initializeShareButtons(shortUrl) {
+    const shareLinkBtn = document.getElementById('share-link-btn');
+    const shareQrBtn = document.getElementById('share-qr-btn');
+
+    if (!navigator.share || !shareLinkBtn || !shareQrBtn) {
+        return;
+    }
+
+    shareLinkBtn.classList.remove('hidden');
+    shareQrBtn.classList.remove('hidden');
+
+    shareLinkBtn.addEventListener('click', () => {
+        navigator.share({
+            title: 'URL Pendek',
+            text: `Ini URL pendek yang baru saja saya buat: ${shortUrl}`,
+            url: shortUrl
+        }).catch(err => console.error("Gagal membagikan tautan:", err));
+    });
+
+    shareQrBtn.addEventListener('click', async () => {
+        try {
+            const qrCodeImageUrl = `${shortUrl}/qr`;
+            const response = await fetch(qrCodeImageUrl);
+            if (!response.ok) {
+                throw new Error(`Gagal mengunduh QR code: Status ${response.status}`);
+            }
+            const blob = await response.blob();
+            const file = new File([blob], 'qr-code.png', { type: blob.type });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    files: [file],
+                    title: 'QR Code untuk URL Pendek',
+                    text: `Pindai QR code ini untuk membuka ${shortUrl}`
+                });
+            } else {
+                alert("Browser Anda tidak mendukung pembagian file gambar ini.");
+            }
+        } catch (err) {
+            console.error("Gagal membagikan QR code:", err);
+            alert("Gagal membagikan gambar QR code. Silakan coba unduh dan bagikan secara manual.");
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const hamburger = document.querySelector(".hamburger");
     const navLinks = document.querySelector(".nav-links");
@@ -11,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Logika untuk form pemendek URL
 const shortenForm = document.getElementById('shorten-form');
 
 if (shortenForm) {
@@ -26,16 +69,14 @@ if (shortenForm) {
         const qrImage = document.getElementById('qr-code-image');
         const qrActions = document.getElementById('qr-actions');
         const downloadBtn = document.getElementById('download-qr-btn');
-        // Deklarasi shareLinkBtn dihapus karena tidak digunakan di file ini.
+        const shareLinkBtn = document.getElementById('share-link-btn');
 
-        // Reset state
         resultDiv.classList.add('hidden');
         errorMessageDiv.classList.add('hidden');
         qrActions.classList.add('hidden');
-        document.getElementById('share-link-btn').classList.add('hidden'); // Sembunyikan tombol secara langsung
+        if (shareLinkBtn) shareLinkBtn.classList.add('hidden');
         errorMessageDiv.textContent = '';
 
-        // Loading state
         shortenButton.textContent = 'Memendekkan...';
         shortenButton.disabled = true;
 
@@ -59,7 +100,6 @@ if (shortenForm) {
                 qrImage.classList.remove('hidden');
                 qrActions.classList.remove('hidden');
 
-                // Panggil fungsi dari share.js untuk menginisialisasi tombol bagikan
                 initializeShareButtons(data.shortUrl);
 
             } else {
@@ -77,20 +117,22 @@ if (shortenForm) {
     });
 }
 
-// Logika untuk tombol salin
-document.getElementById('copy-btn').addEventListener('click', function() {
-    const shortUrl = document.getElementById('short-url').textContent;
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(shortUrl).then(() => {
+const copyBtn = document.getElementById('copy-btn');
+if(copyBtn){
+    copyBtn.addEventListener('click', function() {
+        const shortUrl = document.getElementById('short-url').textContent;
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(shortUrl).then(() => {
+                alert('URL disalin ke clipboard!');
+            });
+        } else {
+            const textArea = document.createElement('textarea');
+            textArea.value = shortUrl;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
             alert('URL disalin ke clipboard!');
-        });
-    } else {
-        const textArea = document.createElement('textarea');
-        textArea.value = shortUrl;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        alert('URL disalin ke clipboard!');
-    }
-});
+        }
+    });
+}

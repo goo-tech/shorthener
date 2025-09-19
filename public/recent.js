@@ -11,7 +11,7 @@ async function loadRecentUrls() {
         const data = await response.json();
 
         if (data.recentUrls && data.recentUrls.length > 0) {
-            listElement.innerHTML = ''; // Kosongkan daftar
+            listElement.innerHTML = '';
             data.recentUrls.forEach(item => {
                 const li = document.createElement('li');
                 
@@ -37,7 +37,6 @@ async function loadRecentUrls() {
     }
 }
 
-// Logika untuk menu hamburger (disalin dari script.js untuk konsistensi)
 document.addEventListener('DOMContentLoaded', () => {
     const hamburger = document.querySelector(".hamburger");
     const navLinks = document.querySelector(".nav-links");
@@ -49,6 +48,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Panggil fungsi untuk memuat URL terbaru
     loadRecentUrls();
 });

@@ -42,9 +42,15 @@ document.addEventListener('DOMContentLoaded', () => {
         destinationElement.textContent = destinationUrl;
         manualLink.href = destinationUrl;
 
-        if (imageUrl && previewImage) {
-            previewImage.src = imageUrl;
-            previewImage.classList.remove('hidden');
+        if (previewImage) {
+            if (imageUrl) {
+                previewImage.src = imageUrl;
+                previewImage.classList.remove('hidden');
+            } 
+            else if (qrCodeDataUri) {
+                previewImage.src = qrCodeDataUri;
+                previewImage.classList.remove('hidden');
+            }
         }
 
         let seconds = 15;
@@ -58,8 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
             seconds--;
             if (seconds >= 0) {
                 countdownElement.textContent = seconds;
-            }
-            if (seconds < 0) {
+            } else {
                 clearInterval(interval);
             }
         }, 1000);
@@ -72,5 +77,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-
-

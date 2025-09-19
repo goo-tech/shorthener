@@ -5,18 +5,15 @@ const { nanoid } = require('nanoid');
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
 
-// Inisialisasi koneksi Redis dari environment variable
 const redis = new Redis(process.env.KV_REDIS_URL || process.env.REDIS_URL);
 const RECENT_URLS_KEY = 'recent_urls';
 
 const app = express();
 app.use(express.json());
 
-// Sajikan file statis dari folder 'public'
 const publicPath = path.join(__dirname, '..', 'public');
 app.use(express.static(publicPath));
 
-// Endpoint untuk membuat URL pendek
 app.post('/api/shorten', async (req, res) => {
   try {
     const { longUrl } = req.body;
@@ -31,7 +28,7 @@ app.post('/api/shorten', async (req, res) => {
     try {
       new URL(longUrl);
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout 5 detik
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
       const response = await fetch(longUrl, {
         signal: controller.signal,
         headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36' }
@@ -54,7 +51,7 @@ app.post('/api/shorten', async (req, res) => {
 
     const recentEntry = { shortCode, title, createdAt: new Date().toISOString() };
     await redis.lpush(RECENT_URLS_KEY, JSON.stringify(recentEntry));
-    await redis.ltrim(RECENT_URLS_KEY, 0, 9); // Batasi hingga 10 entri
+    await redis.ltrim(RECENT_URLS_KEY, 0, 9);
 
     const host = req.headers['x-forwarded-host'] || req.headers.host;
     const protocol = process.env.VERCEL_URL ? 'https' : 'http';
@@ -66,7 +63,6 @@ app.post('/api/shorten', async (req, res) => {
   }
 });
 
-// Endpoint untuk mengambil 5 URL terbaru
 app.get('/api/recent', async (req, res) => {
     try {
         const recentJsonStrings = await redis.lrange(RECENT_URLS_KEY, 0, 4);
@@ -87,7 +83,6 @@ app.get('/api/recent', async (req, res) => {
     }
 });
 
-// Endpoint untuk menghasilkan gambar QR code
 app.get('/:shortCode/qr', async (req, res) => {
     try {
         const { shortCode } = req.params;
@@ -98,10 +93,8 @@ app.get('/:shortCode/qr', async (req, res) => {
         const host = req.headers['x-forwarded-host'] || req.headers.host;
         const protocol = process.env.VERCEL_URL ? 'https' : 'http';
         const shortUrl = `${protocol}://${host}/${shortCode}`;
-        
         const qrOptions = { type: 'png', width: 640, margin: 6, errorCorrectionLevel: 'H' };
         const qrCodeBuffer = await QRCode.toBuffer(shortUrl, qrOptions);
-        
         res.setHeader('Content-Type', 'image/png');
         res.send(qrCodeBuffer);
     } catch (error) {
@@ -110,16 +103,15 @@ app.get('/:shortCode/qr', async (req, res) => {
     }
 });
 
-// Endpoint utama untuk menangani short URL
 app.get('/:shortCode', async (req, res) => {
     try {
         const userAgent = (req.headers['user-agent'] || '').toLowerCase();
         console.log(`[LOG] User-Agent terdeteksi: ${userAgent}`);
 
         const { shortCode } = req.params;
-        const staticFilesAndPages = ['terms', 'privacy', 'dmca', 'transit', 'recent', 'recent.js', 'script.js', 'share.js', 'style.css', 'transit.js'];
-        if (staticFilesAndPages.some(item => shortCode.startsWith(item))) {
-            return res.status(404).end();
+        const staticPages = ['terms', 'privacy', 'dmca', 'transit', 'recent'];
+        if (shortCode.includes('.') || staticPages.includes(shortCode)) {
+            return res.status(404).sendFile(path.join(publicPath, 'index.html'));
         }
 
         const jsonData = await redis.get(shortCode);

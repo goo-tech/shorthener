@@ -28,52 +28,51 @@
             <div class="logo">
                 <a href="/">URL Shorthener</a>
             </div>
-            <ul class="nav-links">
-                <li><a href="/terms.html">Terms</a></li>
-                <li><a href="/privacy.html">Privacy</a></li>
-                <li><a href="/dmca.html">DMCA</a></li>
-            </ul>
             <div class="hamburger">
                 <span class="bar"></span>
                 <span class="bar"></span>
                 <span class="bar"></span>
             </div>
+            <ul class="nav-links">
+                <li><a href="/recent.html">Terbaru</a></li>
+                <li><a href="/terms.html">Terms</a></li>
+                <li><a href="/privacy.html">Privacy</a></li>
+                <li><a href="/dmca.html">DMCA</a></li>
+            </ul>
         </nav>
     </header>
     <main>
         <div class="container">
-        <h1>Pemendek URL Sederhana</h1>
-        <p class="subtitle">Tempelkan URL panjang untuk membuatnya lebih singkat dan mudah dibagikan. Anda juga bisa mengunduh gambar QR Code dan membagikannya untuk keperluan lainnya.</p>
-        
-        <form id="shorten-form">
-            <input type="url" id="long-url" placeholder="Contoh: https://contoh.url/yang/sangat-panjang" required>
-            <button type="submit">Pendekkan</button>
-        </form>
-        
-        <div id="result" class="hidden">
-            <p>URL pendek Anda:</p>
-            <div class="short-url-container">
-                <a href="" id="short-url" target="_blank"></a>
-                <button id="copy-btn">Salin</button>
-                <button id="share-link-btn" class="hidden">Bagikan</button>
-            </div>
-            <div class="qr-code-container">
-                <img id="qr-code-image" alt="QR Code" class="hidden"/>
-                <div id="qr-actions" class="qr-actions hidden">
-                    <a href="#" id="download-qr-btn" class="button-download">Unduh</a>
-                    <button id="share-qr-btn" class="button-share">Bagikan Gambar</button>
+            <h1>Pemendek URL Sederhana</h1>
+            <p class="subtitle">Tempelkan URL panjang untuk membuatnya lebih singkat dan mudah dibagikan. Anda juga bisa mengunduh gambar QR Code dan membagikannya untuk keperluan lainnya.</p>
+            
+            <form id="shorten-form">
+                <input type="url" id="long-url" placeholder="Contoh: https://contoh.url/yang/sangat-panjang" required>
+                <button type="submit">Pendekkan</button>
+            </form>
+            
+            <div id="result" class="hidden">
+                <p>URL pendek Anda:</p>
+                <div class="short-url-container">
+                    <a href="" id="short-url" target="_blank"></a>
+                    <button id="copy-btn">Salin</button>
+                    <button id="share-link-btn" class="hidden">Bagikan</button>
+                </div>
+
+                <div class="qr-code-container">
+                    <img id="qr-code-image" alt="QR Code" class="hidden"/>
+                    <div id="qr-actions" class="qr-actions hidden">
+                        <a href="#" id="download-qr-btn" class="button-download">Unduh</a>
+                        <button id="share-qr-btn" class="button-share">Bagikan Gambar</button>
+                    </div>
                 </div>
             </div>
+            <div id="error-message" class="text-error hidden"></div>
         </div>
-        <div id="error-message" class="text-error hidden"></div>
-    </div>
     </main>
     <aside>
         <p class="subtitle">Made with ❤️ by <a href="//gootech.my.id">GooTech</a></p>
     </aside>
-    <!--script src="share.js"></script-->
     <script src="script.js"></script>
 </body>
 </html>
-
-
