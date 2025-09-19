@@ -93,7 +93,7 @@ app.get('/:shortCode/qr', async (req, res) => {
         const host = req.headers['x-forwarded-host'] || req.headers.host;
         const protocol = process.env.VERCEL_URL ? 'https' : 'http';
         const shortUrl = `${protocol}://${host}/${shortCode}`;
-        const qrOptions = { type: 'png', width: 640, margin: 6, errorCorrectionLevel: 'H' };
+        const qrOptions = { type: 'png', width: 320, margin: 3, errorCorrectionLevel: 'H' };
         const qrCodeBuffer = await QRCode.toBuffer(shortUrl, qrOptions);
         res.setHeader('Content-Type', 'image/png');
         res.send(qrCodeBuffer);
