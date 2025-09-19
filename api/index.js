@@ -94,7 +94,7 @@ app.get('/:shortCode/qr', async (req, res) => {
         const protocol = process.env.VERCEL_URL ? 'https' : 'http';
         const shortUrl = `${protocol}://${host}/${shortCode}`;
         
-        const qrOptions = { type: 'png', width: 640, margin: 40, errorCorrectionLevel: 'H' };
+        const qrOptions = { type: 'png', width: 640, margin: 10, errorCorrectionLevel: 'H' };
         const qrCodeBuffer = await QRCode.toBuffer(shortUrl, qrOptions);
         res.setHeader('Content-Type', 'image/png');
         res.send(qrCodeBuffer);
@@ -141,8 +141,8 @@ app.get('/:shortCode', async (req, res) => {
                     <meta property="og:description" content="${description.replace(/"/g, '&quot;')}">
                     <meta property="og:url" content="${shortUrl}">
                     <meta property="og:image" content="${qrCodeImageUrl}">
-                    <meta property="og:image:width" content="600">
-                    <meta property="og:image:height" content="600">
+                    <meta property="og:image:width" content="640">
+                    <meta property="og:image:height" content="640">
                     <meta name="twitter:card" content="summary_large_image">
                 </head><body><p>Ini adalah halaman pratinjau untuk URL pendek. Anda dapat mengunjungi tautan aslinya di <a href="${longUrl}">${longUrl}</a>.</p></body></html>
             `;
