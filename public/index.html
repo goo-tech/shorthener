@@ -55,10 +55,14 @@
             <div class="short-url-container">
                 <a href="" id="short-url" target="_blank"></a>
                 <button id="copy-btn">Salin</button>
+                <button id="share-link-btn" class="hidden">Bagikan</button>
             </div>
             <div class="qr-code-container">
                 <img id="qr-code-image" alt="QR Code" class="hidden"/>
-                <a href="#" id="download-qr-btn" class="button-download hidden" download="qr-code.png">Unduh QR Code</a>
+                <div id="qr-actions" class="qr-actions hidden">
+                    <a href="#" id="download-qr-btn" class="button-download">Unduh</a>
+                    <button id="share-qr-btn" class="button-share">Bagikan Gambar</button>
+                </div>
             </div>
         </div>
         <div id="error-message" class="text-error hidden"></div>
@@ -71,3 +75,5 @@
     <script src="script.js"></script>
 </body>
 </html>
+
+
