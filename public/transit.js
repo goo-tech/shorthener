@@ -40,10 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
             metaOgImage.setAttribute('content', qrCodeDataUri);
         }
 
-        titleElement.textContent = title || 'Judul Tidak Tersedia';
-        descriptionElement.textContent = description || '';
-        destinationElement.textContent = destinationUrl;
-        manualLink.href = destinationUrl;
+        if(titleElement) titleElement.textContent = title || 'Judul Tidak Tersedia';
+        if(descriptionElement) descriptionElement.textContent = description || '';
+        if(destinationElement) destinationElement.textContent = destinationUrl;
+        if(manualLink) manualLink.href = destinationUrl;
 
         if (previewImage) {
             if (imageUrl) {
@@ -85,26 +85,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         let seconds = 15;
-        countdownElement.textContent = seconds;
+        if(countdownElement) {
+            countdownElement.textContent = seconds;
 
-        setTimeout(() => {
-            window.location.href = destinationUrl;
-        }, 15000);
+            setTimeout(() => {
+                window.location.href = destinationUrl;
+            }, 15000);
 
-        const interval = setInterval(() => {
-            seconds--;
-            if (seconds >= 0) {
-                countdownElement.textContent = seconds;
-            } else {
-                clearInterval(interval);
-            }
-        }, 1000);
+            const interval = setInterval(() => {
+                seconds--;
+                if (seconds >= 0) {
+                    countdownElement.textContent = seconds;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
 
     } else {
-        titleElement.textContent = 'URL Tujuan Tidak Valid';
-        destinationElement.textContent = 'URL tujuan tidak ditemukan.';
-        if (document.querySelector('.countdown')) {
-            document.querySelector('.countdown').style.display = 'none';
-        }
+        if(titleElement) titleElement.textContent = 'URL Tujuan Tidak Valid';
+        if(destinationElement) destinationElement.textContent = 'URL tujuan tidak ditemukan.';
+        const countdownContainer = document.querySelector('.countdown');
+        if(countdownContainer) countdownContainer.style.display = 'none';
     }
 });
