@@ -93,6 +93,7 @@ app.get('/:shortCode/qr', async (req, res) => {
         const host = req.headers['x-forwarded-host'] || req.headers.host;
         const protocol = process.env.VERCEL_URL ? 'https' : 'http';
         const shortUrl = `${protocol}://${host}/${shortCode}`;
+        
         const qrOptions = { type: 'png', width: 600, margin: 2, errorCorrectionLevel: 'H' };
         const qrCodeBuffer = await QRCode.toBuffer(shortUrl, qrOptions);
         res.setHeader('Content-Type', 'image/png');
@@ -109,9 +110,10 @@ app.get('/:shortCode', async (req, res) => {
         console.log(`[LOG] User-Agent terdeteksi: ${userAgent}`);
 
         const { shortCode } = req.params;
-        const staticPages = ['terms', 'privacy', 'dmca', 'transit', 'recent'];
-        if (shortCode.includes('.') || staticPages.includes(shortCode)) {
-            return res.status(404).sendFile(path.join(publicPath, 'index.html'));
+        // Daftar file statis dan halaman yang diabaikan, sekarang termasuk share.js dan recent.js
+        const staticFilesAndPages = ['terms', 'privacy', 'dmca', 'transit', 'recent', 'share.js', 'recent.js', 'script.js', 'style.css', 'transit.js'];
+        if (staticFilesAndPages.some(item => shortCode.startsWith(item))) {
+            return res.status(404).end();
         }
 
         const jsonData = await redis.get(shortCode);
@@ -146,12 +148,19 @@ app.get('/:shortCode', async (req, res) => {
             `;
             return res.status(200).setHeader('Content-Type', 'text/html').send(html);
         }
-
-        const params = new URLSearchParams({ url: longUrl, title, description });
+        
+        const qrCodeDataUri = await QRCode.toDataURL(shortUrl, { errorCorrectionLevel: 'H' });
+        const params = new URLSearchParams({ 
+            url: longUrl, 
+            title: title, 
+            description: description,
+            qr: qrCodeDataUri
+        });
         if (ogImage) {
             params.append('image', ogImage);
         }
         return res.redirect(`/transit.html?${params.toString()}`);
+        
     } catch (error) {
         console.error('Redirect Error:', error);
         return res.status(500).sendFile(path.join(publicPath, 'index.html'));

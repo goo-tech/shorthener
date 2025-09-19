@@ -345,4 +345,95 @@ aside a:hover {
     }
 }
 
+/* Modifikasi .short-url-container untuk menampung 3 tombol */
+.short-url-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #e9ecef;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: -15px;
+}
 
+#copy-btn {
+    padding: 8px 15px;
+    border: none;
+    background-color: #28a745;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* Tombol Bagikan Tautan Baru */
+#share-link-btn {
+    padding: 8px 15px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.qr-code-container {
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+#qr-code-image {
+    max-width: 200px; /* Batasi ukuran agar tidak terlalu besar di desktop */
+    width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.qr-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    width: 100%;
+}
+
+.button-download, .button-share {
+    display: inline-block;
+    padding: 10px 20px;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    flex-grow: 1; /* Membuat tombol mengisi ruang */
+    max-width: 200px;
+}
+
+.button-download {
+    background-color: #17a2b8; /* Info Blue */
+}
+
+.button-download:hover {
+    background-color: #138496;
+}
+
+.button-share {
+    background-color: #6c757d; /* Secondary Gray */
+}
+
+.button-share:hover {
+    background-color: #5a6268;
+}
+
+
+.hidden {
+    display: none !important;
+}
