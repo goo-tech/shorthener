@@ -2,8 +2,8 @@ function initializeShareButtons(shortUrl) {
     const shareLinkBtn = document.getElementById('share-link-btn');
     const shareQrBtn = document.getElementById('share-qr-btn');
 
-    // Jika browser tidak mendukung Web Share API, jangan lakukan apa-apa.
-    if (!navigator.share) {
+    // Jika browser tidak mendukung Web Share API, atau tombol tidak ada, hentikan eksekusi.
+    if (!navigator.share || !shareLinkBtn || !shareQrBtn) {
         return;
     }
 
@@ -11,20 +11,22 @@ function initializeShareButtons(shortUrl) {
     shareLinkBtn.classList.remove('hidden');
     shareQrBtn.classList.remove('hidden');
 
-    // Tambahkan event listener untuk membagikan tautan.
-    shareLinkBtn.onclick = () => {
+    // Gunakan addEventListener untuk praktik yang lebih modern.
+    shareLinkBtn.addEventListener('click', () => {
         navigator.share({
             title: 'URL Pendek',
             text: `Ini URL pendek yang baru saja saya buat: ${shortUrl}`,
             url: shortUrl
         }).catch(err => console.error("Gagal membagikan tautan:", err));
-    };
+    });
 
-    // Tambahkan event listener untuk membagikan gambar QR code.
-    shareQrBtn.onclick = async () => {
+    shareQrBtn.addEventListener('click', async () => {
         try {
             const qrCodeImageUrl = `${shortUrl}/qr`;
             const response = await fetch(qrCodeImageUrl);
+            if (!response.ok) {
+                throw new Error('Gagal mengunduh gambar QR code.');
+            }
             const blob = await response.blob();
             const file = new File([blob], 'qr-code.png', { type: blob.type });
 
@@ -41,6 +43,5 @@ function initializeShareButtons(shortUrl) {
             console.error("Gagal membagikan QR code:", err);
             alert("Gagal membagikan gambar QR code.");
         }
-    };
+    });
 }
-

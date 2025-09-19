@@ -26,14 +26,16 @@ if (shortenForm) {
         const qrImage = document.getElementById('qr-code-image');
         const qrActions = document.getElementById('qr-actions');
         const downloadBtn = document.getElementById('download-qr-btn');
-        const shareLinkBtn = document.getElementById('share-link-btn');
+        // Deklarasi shareLinkBtn dihapus karena tidak digunakan di file ini.
 
+        // Reset state
         resultDiv.classList.add('hidden');
         errorMessageDiv.classList.add('hidden');
         qrActions.classList.add('hidden');
-        shareLinkBtn.classList.add('hidden');
+        document.getElementById('share-link-btn').classList.add('hidden'); // Sembunyikan tombol secara langsung
         errorMessageDiv.textContent = '';
 
+        // Loading state
         shortenButton.textContent = 'Memendekkan...';
         shortenButton.disabled = true;
 
@@ -92,4 +94,3 @@ document.getElementById('copy-btn').addEventListener('click', function() {
         alert('URL disalin ke clipboard!');
     }
 });
-
