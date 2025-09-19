@@ -387,3 +387,13 @@ h1 {
     .hamburger.active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
     .container { padding: 20px; }
 }
+
+#transit-share-actions {
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 1px solid #eee;
+}
+
+#transit-share-actions .button-share {
+    width: 100%; /* Membuat tombol mengisi lebar kontainer */
+}

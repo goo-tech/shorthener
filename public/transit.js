@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const description = urlParams.get('description');
     const qrCodeDataUri = urlParams.get('qr');
     const imageUrl = urlParams.get('image');
+    const shortUrl = urlParams.get('surl');
 
     const titleElement = document.getElementById('page-title');
     const descriptionElement = document.getElementById('page-description');
@@ -23,6 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const manualLink = document.getElementById('manual-link');
     const countdownElement = document.getElementById('countdown');
     const previewImage = document.getElementById('preview-image');
+    const shareQrBtnTransit = document.getElementById('share-qr-btn-transit');
+    const transitShareActions = document.getElementById('transit-share-actions');
 
     if (destinationUrl) {
         document.title = title || 'Mengalihkan Anda...';
@@ -51,6 +54,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 previewImage.src = qrCodeDataUri;
                 previewImage.classList.remove('hidden');
             }
+        }
+
+        if (navigator.share && shortUrl && shareQrBtnTransit && transitShareActions) {
+            transitShareActions.classList.remove('hidden');
+            shareQrBtnTransit.addEventListener('click', async () => {
+                try {
+                    const qrCodeImageUrl = `${shortUrl}/qr`;
+                    const response = await fetch(qrCodeImageUrl);
+                    if (!response.ok) {
+                        throw new Error(`Gagal mengunduh QR code: Status ${response.status}`);
+                    }
+                    const blob = await response.blob();
+                    const file = new File([blob], 'qr-code.png', { type: blob.type });
+
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: 'QR Code untuk URL Pendek',
+                            text: `Pindai QR code ini untuk membuka ${shortUrl}`
+                        });
+                    } else {
+                        alert("Browser Anda tidak mendukung pembagian file gambar ini.");
+                    }
+                } catch (err) {
+                    console.error("Gagal membagikan QR code:", err);
+                    alert("Gagal membagikan gambar QR code.");
+                }
+            });
         }
 
         let seconds = 15;
