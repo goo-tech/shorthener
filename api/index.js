@@ -65,7 +65,7 @@ app.post('/api/shorten', async (req, res) => {
 
 app.get('/api/recent', async (req, res) => {
     try {
-        const recentJsonStrings = await redis.lrange(RECENT_URLS_KEY, 0, 4);
+        const recentJsonStrings = await redis.lrange(RECENT_URLS_KEY, 0, 9);
         const host = req.headers['x-forwarded-host'] || req.headers.host;
         const protocol = process.env.VERCEL_URL ? 'https' : 'http';
         const baseUrl = `${protocol}://${host}`;

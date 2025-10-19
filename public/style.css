@@ -1,11 +1,11 @@
 :root {
-    --primary-color: #007bff;
-    --primary-hover: #0056b3;
+    --primary-color: #9804ca;
+    --primary-hover: #620282;
     --background-color: #f0f2f5;
     --surface-color: #ffffff;
-    --text-color-primary: #1c1e21;
-    --text-color-secondary: #65676b;
-    --border-color: #ddd;
+    --text-color-primary: #1d042e;
+    --text-color-secondary: #382e3f;
+    --border-color: #896f9a;
     --header-height: 70px;
     --border-radius: 8px;
     --container-shadow: 0 8px 24px rgba(0,0,0,0.1);
@@ -155,11 +155,11 @@ h1 {
 
 #shorten-form button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(180,0,255,0.3);
 }
 
 #shorten-form button:disabled {
-    background: #aab8c5;
+    background: #c1aac5;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
@@ -202,7 +202,7 @@ h1 {
     cursor: pointer;
     flex-shrink: 0;
 }
-#copy-btn { background-color: #28a745; }
+#copy-btn { background-color: #28a794; }
 #share-link-btn { background-color: var(--primary-color); }
 
 .qr-code-container {
@@ -349,7 +349,7 @@ h1 {
 }
 
 .text-error {
-    color: #dc3545;
+    color: #dc8935;
     font-weight: bold;
     margin-top: 15px;
     text-align: center;
@@ -368,6 +368,121 @@ h1 {
     margin: 5px auto;
     transition: all 0.3s ease-in-out;
     background-color: #333;
+}
+
+/* Styles untuk posts - konsisten dengan skema warna existing */
+.post-title {
+    display: block;
+    font-weight: 600;
+    color: var(--primary-color);
+    text-decoration: none;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    line-height: 1.3;
+}
+
+.post-title:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+.post-date {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--text-color-secondary);
+    margin-bottom: 0.75rem;
+    font-style: italic;
+}
+
+.post-description {
+    color: var(--text-color-secondary);
+    line-height: 1.5;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+#posts-feed-section, #posts-section {
+    margin-top: 30px;
+    max-width: 600px;
+}
+
+#posts-feed-section h2, #posts-section h2 {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    color: var(--text-color-primary);
+}
+
+#posts-feed-list, #posts-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+#posts-feed-list li, #posts-list li {
+    padding: 20px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: background-color 0.2s ease;
+}
+
+#posts-feed-list li:hover, #posts-list li:hover {
+    background-color: #f9f9f9;
+    border-radius: var(--border-radius);
+}
+
+#posts-feed-list li:last-child, #posts-list li:last-child {
+    border-bottom: none;
+}
+
+#load-more-btn {
+    display: block;
+    width: 100%;
+    max-width: 200px;
+    margin: 2rem auto;
+    padding: 12px 24px;
+    background: linear-gradient(45deg, var(--primary-color), var(--primary-hover));
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#load-more-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(152, 4, 202, 0.3);
+}
+
+#load-more-btn:disabled {
+    background: #c1aac5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.view-all-posts {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+.view-all-posts a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.view-all-posts a:hover {
+    text-decoration: underline;
+    color: var(--primary-hover);
 }
 
 @media (max-width: 768px) {

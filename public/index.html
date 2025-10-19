@@ -29,6 +29,7 @@
             </div>
             <ul class="nav-links">
                 <li><a href="/recent.html">Terbaru</a></li>
+                <li><a href="/posts.html">Posts</a></li>
                 <li><a href="/terms.html">Terms</a></li>
                 <li><a href="/privacy.html">Privacy</a></li>
                 <li><a href="/dmca.html">DMCA</a></li>
@@ -63,6 +64,19 @@
             </div>
             <div id="error-message" class="text-error hidden"></div>
         </div>
+
+        <!-- Section Posts Feed -->
+        <section class="container" id="posts-feed-section">
+            <h2>5 Posts Terbaru</h2>
+            <ul id="posts-feed-list">
+                <li class="loading-placeholder">Memuat posts terbaru...</li>
+            </ul>
+            <div class="view-all-posts">
+                <a href="/posts.html">Lihat semua posts →</a>
+            </div>
+        </section>
+
+        <!-- Section Recent URLs -->
         <section class="container" id="recent-links-section" class="hidden">
             <h2>5 URL Terbaru</h2>
             <ul id="recent-links-list">
@@ -74,5 +88,6 @@
         <p class="subtitle">Made with ❤️ by <a href="//gootech.my.id">GooTech</a></p>
     </aside>
     <script src="script.js"></script>
+    <script src="posts.js"></script>
 </body>
 </html>

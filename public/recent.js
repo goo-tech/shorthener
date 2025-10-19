@@ -1,8 +1,9 @@
 async function loadRecentUrls() {
+    const listElement = document.getElementById('recent-links-list');
+    if (!listElement) return;
+
     try {
         const response = await fetch('/api/recent');
-        const listElement = document.getElementById('recent-links-list');
-        
         if (!response.ok) {
             listElement.innerHTML = '<li class="error-placeholder">Gagal memuat data.</li>';
             return;
@@ -12,6 +13,7 @@ async function loadRecentUrls() {
 
         if (data.recentUrls && data.recentUrls.length > 0) {
             listElement.innerHTML = '';
+            // PERUBAHAN: Menampilkan semua URL (hingga 10)
             data.recentUrls.forEach(item => {
                 const li = document.createElement('li');
                 
@@ -33,7 +35,7 @@ async function loadRecentUrls() {
         }
     } catch (error) {
         console.error('Gagal memuat URL terbaru:', error);
-        document.getElementById('recent-links-list').innerHTML = '<li class="error-placeholder">Terjadi kesalahan jaringan.</li>';
+        listElement.innerHTML = '<li class="error-placeholder">Terjadi kesalahan jaringan.</li>';
     }
 }
 

@@ -39,6 +39,7 @@ function initializeShareButtons(shortUrl) {
     });
 }
 
+// FUNGSI INI TETAP DIPERTAHANKAN untuk halaman index
 async function loadRecentUrls() {
     const listElement = document.getElementById('recent-links-list');
     if (!listElement) return;
@@ -55,7 +56,9 @@ async function loadRecentUrls() {
 
         if (data.recentUrls && data.recentUrls.length > 0) {
             listElement.innerHTML = '';
-            data.recentUrls.forEach(item => {
+            // PERUBAHAN: Hanya ambil 5 terbaru untuk halaman index
+            const recentUrls = data.recentUrls.slice(0, 5);
+            recentUrls.forEach(item => {
                 const li = document.createElement('li');
                 const link = document.createElement('a');
                 link.href = item.shortUrl;
