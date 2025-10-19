@@ -10,7 +10,7 @@ function initializeShareButtons(shortUrl) {
     shareLinkBtn.addEventListener('click', () => {
         navigator.share({
             title: 'URL Pendek',
-            text: `Ini URL pendek yang baru saja saya buat: ${shortUrl}`,
+            text: `Ini tautan pendek yang baru saja saya buat: ${shortUrl}`,
             url: shortUrl
         }).catch(err => console.error("Gagal membagikan tautan:", err));
     });
