@@ -39,7 +39,7 @@ function initializeShareButtons(shortUrl) {
     });
 }
 
-// FUNGSI INI TETAP DIPERTAHANKAN untuk halaman index
+// Fungsi untuk memuat 5 URL terbaru di halaman index
 async function loadRecentUrls() {
     const listElement = document.getElementById('recent-links-list');
     if (!listElement) return;
@@ -56,7 +56,6 @@ async function loadRecentUrls() {
 
         if (data.recentUrls && data.recentUrls.length > 0) {
             listElement.innerHTML = '';
-            // PERUBAHAN: Hanya ambil 5 terbaru untuk halaman index
             const recentUrls = data.recentUrls.slice(0, 5);
             recentUrls.forEach(item => {
                 const li = document.createElement('li');
@@ -82,15 +81,6 @@ async function loadRecentUrls() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const hamburger = document.querySelector(".hamburger");
-    const navLinks = document.querySelector(".nav-links");
-    if (hamburger) {
-        hamburger.addEventListener("click", () => {
-            hamburger.classList.toggle("active");
-            navLinks.classList.toggle("active");
-        });
-    }
-
     // Hanya panggil loadRecentUrls jika elemennya ada di halaman
     if (document.getElementById('recent-links-list')) {
         loadRecentUrls();

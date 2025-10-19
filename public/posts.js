@@ -40,7 +40,6 @@ async function loadPostsFeed(limit = 5) {
                 
                 const descEl = document.createElement('p');
                 descEl.className = 'post-description';
-                // Bersihkan HTML dari description dan potong teks
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = description;
                 let cleanDesc = tempDiv.textContent || tempDiv.innerText || '';
@@ -61,7 +60,6 @@ async function loadPostsFeed(limit = 5) {
     }
 }
 
-// Untuk halaman posts.html dengan load more functionality
 let allPosts = [];
 let visiblePosts = 0;
 
@@ -93,7 +91,7 @@ async function loadAllPosts() {
 
         if (allPosts.length > 0) {
             listElement.innerHTML = '';
-            renderPosts(6); // Tampilkan 6 posts pertama
+            renderPosts(6);
             
             if (loadMoreBtn && allPosts.length > 6) {
                 loadMoreBtn.classList.remove('hidden');
@@ -129,7 +127,6 @@ function renderPosts(count) {
         
         const descEl = document.createElement('p');
         descEl.className = 'post-description';
-        // Bersihkan HTML dari description
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = description;
         let cleanDesc = tempDiv.textContent || tempDiv.innerText || '';
@@ -144,29 +141,15 @@ function renderPosts(count) {
 
     visiblePosts += count;
     
-    // Sembunyikan tombol load more jika sudah menampilkan semua posts
     if (loadMoreBtn && visiblePosts >= allPosts.length) {
         loadMoreBtn.style.display = 'none';
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const hamburger = document.querySelector(".hamburger");
-    const navLinks = document.querySelector(".nav-links");
-
-    if(hamburger) {
-        hamburger.addEventListener("click", () => {
-            hamburger.classList.toggle("active");
-            navLinks.classList.toggle("active");
-        });
-    }
-
-    // Deteksi halaman mana yang sedang aktif
     if (document.getElementById('posts-feed-list')) {
-        // Halaman index - load 5 posts
         loadPostsFeed(5);
     } else if (document.getElementById('posts-list') && document.getElementById('load-more-btn')) {
-        // Halaman posts dengan load more
         loadAllPosts();
         
         const loadMoreBtn = document.getElementById('load-more-btn');
@@ -176,7 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     } else if (document.getElementById('posts-list')) {
-        // Halaman posts tanpa load more (fallback)
         loadPostsFeed(10);
     }
 });
