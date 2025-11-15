@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-adsense-account" content="ca-pub-8526606076277673">
-<!-- Facebook App -->
+    <!-- Facebook App -->
     <meta property="fb:app_id" content="317955838767353" />
-<!-- Open Graph untuk Halaman -->
+    <!-- Open Graph untuk Halaman -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://short.gootech.my.id/" />
-    <meta property="og:title" content="URL Shortener" />
-    <meta property="og:description" content="Pemendek URL panjang yang sangat sederhana dan mudah digunakan. Bagikan link ke teman atau rekan bisnis dengan mudah." />
+    <meta property="og:title" content="URL Shortener dengan QR Art Generator" />
+    <meta property="og:description" content="Pemendek URL panjang yang sangat sederhana dan mudah digunakan. Buat QR code artistik dengan AI dan bagikan dengan mudah." />
     <meta content="/images/logo-sp.jpg" property="og:image">
     <meta property="business:contact_data:website" content="https://www.facebook.com/KnoAcc" />
-    <meta name="description" content="Pemendek URL panjang yang sangat sederhana dan mudah digunakan. Bagikan link ke teman atau rekan bisnis dengan mudah.">
-    <title>Pemendek URL Sederhana</title>
+    <meta name="description" content="Pemendek URL panjang yang sangat sederhana dan mudah digunakan. Buat QR code artistik dengan AI dan bagikan dengan mudah.">
+    <title>Pemendek URL Sederhana dengan QR Art Generator</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,47 +47,80 @@
     <main>
         <div class="container container-form">
             <h1>Pemendek URL Sederhana</h1>
-            <p class="subtitle">Tempelkan URL panjang untuk membuatnya lebih singkat dan mudah dibagikan. Anda juga bisa mengunduh gambar QR Code dan membagikannya untuk keperluan lainnya.</p>
+            <p class="subtitle">Tempelkan URL panjang untuk membuatnya lebih singkat dan mudah dibagikan. Anda juga bisa mengunduh gambar QR Code dan membuat QR code artistik dengan AI.</p>
             
             <form id="shorten-form">
                 <input type="url" id="long-url" placeholder="Contoh: https://contoh.url/yang/sangat-panjang" required>
                 <button type="submit">Pendekkan</button>
             </form>
-            <!-- QR Code Biasa -->
-            <div class="qr-code-container">
+            
+            <div id="result" class="hidden">
+                <p>URL pendek Anda:</p>
+                <div class="short-url-container">
+                    <a href="" id="short-url" target="_blank"></a>
+                    <button id="copy-btn">Salin</button>
+                    <button id="share-link-btn" class="hidden">Bagikan</button>
+                </div>
+
+                <!-- QR Code Biasa -->
+                <div class="qr-code-container">
                     <img id="qr-code-image" alt="QR Code" class="hidden"/>
                     <div id="qr-actions" class="qr-actions hidden">
-                        <a href="#" id="download-qr-btn" class="button-download">Unduh</a>
+                        <a href="#" id="download-qr-btn" class="button-download">Unduh QR Code</a>
                         <button id="share-qr-btn" class="button-share">Bagikan Gambar</button>
                     </div>
                 </div>
 
-            <!-- QR Art Generator Section -->
-            <div id="qr-art-section" class="qr-art-section hidden">
-              <h3>QR Code Artistik</h3>
-              <p>Ubah QR code menjadi karya seni dengan AI
-              </p>
-              <div class="qr-art-form">
-                <input type="text" id="qr-art-prompt" placeholder="Contoh: a beautiful landscape with mountains and lakes, digital art" maxlength="200">
-                <button id="generate-qr-art-btn">Generate QR Art</button>
-              </div>
-              <div id="qr-art-result" class="hidden">
-                <div class="qr-art-image-container">
-                  <img id="qr-art-image" alt="Artistic QR Code"/>
-                  <div class="qr-art-actions">
-                    <a href="#" id="download-qr-art-btn" class="button-download">Unduh QR Art</a>
-                    <button id="share-qr-art-btn" class="button-share">Bagikan QR Art</button>
+                <!-- QR Art Generator Section -->
+                <div id="qr-art-section" class="qr-art-section hidden">
+                    <h3>🎨 QR Code Artistik</h3>
+                    <p>Ubah QR code biasa menjadi karya seni dengan AI! Masukkan prompt deskriptif dan biarkan AI membuat QR code yang unik.</p>
+                    
+                    <div class="qr-art-form">
+                        <input type="text" id="qr-art-prompt" 
+                               placeholder="Contoh: a beautiful landscape with mountains and lakes, digital art, vibrant colors" 
+                               maxlength="200">
+                        <button type="button" id="generate-qr-art-btn">Generate QR Art</button>
                     </div>
-                  </div>
-                <p class="qr-art-prompt-display">Prompt: <span id="used-prompt"></span></p>
-              </div>
-              <div id="qr-art-loading" class="qr-art-loading hidden">
-                <p>🔄 Membuat QR code artistik... Ini mungkin memakan waktu 10-30 detik.</p>
-                <div class="loading-spinner"></div>
+                    
+                    <div id="qr-art-loading" class="qr-art-loading hidden">
+                        <p>🔄 Membuat QR code artistik dengan AI... Ini mungkin memakan waktu 10-30 detik.</p>
+                        <div class="loading-spinner"></div>
+                        <p class="loading-note">Sedang memproses prompt Anda...</p>
+                    </div>
+                    
+                    <div id="qr-art-result" class="hidden">
+                        <div class="qr-art-image-container">
+                            <img id="qr-art-image" alt="Artistic QR Code"/>
+                            <div class="qr-art-actions">
+                                <a href="#" id="download-qr-art-btn" class="button-download">Unduh QR Art</a>
+                                <button id="share-qr-art-btn" class="button-share">Bagikan QR Art</button>
+                            </div>
+                        </div>
+                        <p class="qr-art-prompt-display">Prompt: <span id="used-prompt"></span></p>
+                    </div>
+
+                    <div id="qr-art-fallback" class="qr-art-fallback-notice hidden">
+                        <p><strong>⚠️ Mode Fallback</strong></p>
+                        <p>AI sedang tidak tersedia. QR code yang dihasilkan menggunakan styling khusus. Coba lagi nanti untuk hasil AI.</p>
+                    </div>
+                    
+                    <div id="qr-art-error" class="text-error hidden"></div>
+
+                    <div class="qr-art-tips">
+                        <p><strong>💡 Tips Prompt:</strong></p>
+                        <ul style="text-align: left; font-size: 0.8rem; color: var(--text-color-secondary); margin: 0.5rem 0; padding-left: 1.5rem;">
+                            <li>"a majestic mountain landscape with sunset, digital art"</li>
+                            <li>"cyberpunk city with neon lights, futuristic"</li>
+                            <li>"ocean waves with dolphins jumping, realistic"</li>
+                            <li>"abstract geometric patterns, modern art"</li>
+                        </ul>
+                    </div>
                 </div>
-              <div id="qr-art-error" class="text-error hidden"></div>
-          </div>
+            </div>
+            <div id="error-message" class="text-error hidden"></div>
         </div>
+
         <!-- Section Posts Feed -->
         <section class="container container-lists" id="posts-feed-section">
             <h2>5 Posts Terbaru</h2>
@@ -98,6 +131,7 @@
                 <a href="/posts.html">Lihat semua posts →</a>
             </div>
         </section>
+
         <!-- Section Recent URLs -->
         <section class="container container-lists" id="recent-links-section" class="hidden">
             <h2>5 URL Terbaru</h2>
@@ -105,13 +139,63 @@
                 <li class="loading-placeholder">Memuat data terbaru...</li>
             </ul>
         </section>
+
+        <!-- Features Section -->
+        <section class="container container-wide">
+            <h2>Fitur Unggulan</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: var(--border-radius);">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🔗</div>
+                    <h3 style="margin: 0 0 10px 0; color: var(--text-color-primary);">URL Shortening</h3>
+                    <p style="color: var(--text-color-secondary); margin: 0; font-size: 0.9rem;">Pendekkan URL panjang menjadi link yang mudah dibagikan</p>
+                </div>
+                <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: var(--border-radius);">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">📱</div>
+                    <h3 style="margin: 0 0 10px 0; color: var(--text-color-primary);">QR Code</h3>
+                    <p style="color: var(--text-color-secondary); margin: 0; font-size: 0.9rem;">Generate QR code untuk setiap URL pendek</p>
+                </div>
+                <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: var(--border-radius);">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🎨</div>
+                    <h3 style="margin: 0 0 10px 0; color: var(--text-color-primary);">QR Art AI</h3>
+                    <p style="color: var(--text-color-secondary); margin: 0; font-size: 0.9rem;">Buat QR code artistik dengan teknologi AI</p>
+                </div>
+                <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: var(--border-radius);">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">⚡</div>
+                    <h3 style="margin: 0 0 10px 0; color: var(--text-color-primary);">Cepat & Aman</h3>
+                    <p style="color: var(--text-color-secondary); margin: 0; font-size: 0.9rem;">Proses cepat dengan keamanan terjamin</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="container container-wide">
+            <h2>Cara Kerja QR Art Generator</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
+                <div style="text-align: center; padding: 15px;">
+                    <div style="background: var(--primary-color); color: white; width: 40px; height: 40px; line-height: 40px; border-radius: 50%; margin: 0 auto 10px; font-weight: bold;">1</div>
+                    <p style="margin: 0; color: var(--text-color-secondary); font-size: 0.9rem;">Pendekkan URL Anda</p>
+                </div>
+                <div style="text-align: center; padding: 15px;">
+                    <div style="background: var(--primary-color); color: white; width: 40px; height: 40px; line-height: 40px; border-radius: 50%; margin: 0 auto 10px; font-weight: bold;">2</div>
+                    <p style="margin: 0; color: var(--text-color-secondary); font-size: 0.9rem;">Masukkan prompt kreatif</p>
+                </div>
+                <div style="text-align: center; padding: 15px;">
+                    <div style="background: var(--primary-color); color: white; width: 40px; height: 40px; line-height: 40px; border-radius: 50%; margin: 0 auto 10px; font-weight: bold;">3</div>
+                    <p style="margin: 0; color: var(--text-color-secondary); font-size: 0.9rem;">AI generate QR art</p>
+                </div>
+                <div style="text-align: center; padding: 15px;">
+                    <div style="background: var(--primary-color); color: white; width: 40px; height: 40px; line-height: 40px; border-radius: 50%; margin: 0 auto 10px; font-weight: bold;">4</div>
+                    <p style="margin: 0; color: var(--text-color-secondary); font-size: 0.9rem;">Download & bagikan</p>
+                </div>
+            </div>
+        </section>
     </main>
     <aside>
-        <p class="subtitle">Made with ❤️ by <a href="//gootech.my.id">GooTech</a></p>
+        <p class="subtitle">Made with ❤️ by <a href="//gootech.my.id">GooTech</a> | Powered by AI</p>
     </aside>
-    <script src="hamburger.js"></script>
     <script src="script.js"></script>
-    <script src="qr-art.js"></script>
     <script src="posts.js"></script>
+    <script src="hamburger.js"></script>
+    <script src="qr-art.js"></script>
 </body>
 </html>
