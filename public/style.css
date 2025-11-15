@@ -121,8 +121,8 @@ aside a:hover {
 /* Variasi container berdasarkan konten */
 .container-form, .container-list {
     max-width: 550px;
-    margin: auto 1px;
-    text-align: center;
+    margin: 0 auto;
+    clear: both;
     width: 100%;
     padding: var(--container-padding);
 }
