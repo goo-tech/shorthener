@@ -45,8 +45,9 @@
         </nav>
     </header>
     <main>
-        <div class="container container-form">
-            <h1>Pemendek URL Sederhana</h1>
+        <section class="container container-wide">
+          <h1>Pemendek URL Sederhana</h1>
+          <div class="container-form">
             <p class="subtitle">Tempelkan URL panjang untuk membuatnya lebih singkat dan mudah dibagikan. Anda juga bisa mengunduh gambar QR Code dan membuat QR code artistik dengan AI.</p>
             
             <form id="shorten-form">
@@ -119,25 +120,30 @@
                 </div>
             </div>
             <div id="error-message" class="text-error hidden"></div>
-        </div>
+          </div>
+        </section>
 
         <!-- Section Posts Feed -->
-        <section class="container container-lists" id="posts-feed-section">
+        <section class="container container-wide" id="posts-feed-section">
             <h2>5 Posts Terbaru</h2>
+            <div class="container-lists"
             <ul id="posts-feed-list">
                 <li class="loading-placeholder">Memuat posts terbaru...</li>
             </ul>
             <div class="view-all-posts">
                 <a href="/posts.html">Lihat semua posts →</a>
             </div>
+          </div>
         </section>
 
         <!-- Section Recent URLs -->
-        <section class="container container-lists" id="recent-links-section" class="hidden">
+        <section class="container container-wide" id="recent-links-section" class="hidden">
             <h2>5 URL Terbaru</h2>
+            <div class="container-lists"
             <ul id="recent-links-list">
                 <li class="loading-placeholder">Memuat data terbaru...</li>
             </ul>
+          </div>
         </section>
 
         <!-- Features Section -->
