@@ -4,15 +4,181 @@ const Redis = require('ioredis');
 const { nanoid } = require('nanoid');
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
+const { HfInference } = require('@huggingface/inference');
 
 const redis = new Redis(process.env.KV_REDIS_URL || process.env.REDIS_URL);
 const RECENT_URLS_KEY = 'recent_urls';
+
+// Initialize Hugging Face
+const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
 const app = express();
 app.use(express.json());
 
 const publicPath = path.join(__dirname, '..', 'public');
 app.use(express.static(publicPath));
+
+// Endpoint untuk generate QR Art
+app.post('/api/generate-qr-art', async (req, res) => {
+  try {
+    const { shortCode, prompt } = req.body;
+    
+    if (!shortCode || !prompt) {
+      return res.status(400).json({ error: 'shortCode dan prompt wajib diisi' });
+    }
+
+    // Ambil data dari Redis
+    const jsonData = await redis.get(shortCode);
+    if (!jsonData) {
+      return res.status(404).json({ error: 'Short URL tidak ditemukan' });
+    }
+
+    const data = JSON.parse(jsonData);
+    const host = req.headers['x-forwarded-host'] || req.headers.host;
+    const protocol = process.env.VERCEL_URL ? 'https' : 'http';
+    const shortUrl = `${protocol}://${host}/${shortCode}`;
+
+    // Generate QR code base
+    const qrCodeBuffer = await QRCode.toBuffer(shortUrl, {
+      errorCorrectionLevel: 'H',
+      width: 768,
+      margin: 1,
+      type: 'png'
+    });
+
+    // Convert buffer to base64
+    const base64Data = qrCodeBuffer.toString('base64');
+
+    try {
+      // Generate artistic QR code menggunakan Hugging Face
+      const result = await hf.textToImage({
+        model: "DionTimmer/controlnet_qrcode-controlnet-v1-1",
+        inputs: prompt,
+        parameters: {
+          num_inference_steps: 20,
+          guidance_scale: 7.5,
+        }
+      }, {
+        qr_code_image: base64Data,
+      });
+
+      // Convert blob to base64
+      const arrayBuffer = await result.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      const artisticQrBase64 = buffer.toString('base64');
+      const artisticQrDataUrl = `data:image/png;base64,${artisticQrBase64}`;
+
+      // Simpan hasil ke Redis (opsional)
+      const artKey = `qr_art:${shortCode}:${nanoid(5)}`;
+      await redis.setex(artKey, 86400, JSON.stringify({ // Expire dalam 24 jam
+        prompt,
+        artisticQrDataUrl,
+        createdAt: new Date().toISOString()
+      }));
+
+      res.json({
+        artisticQrDataUrl,
+        artKey,
+        prompt
+      });
+
+    } catch (hfError) {
+      console.error('Hugging Face API Error:', hfError);
+      
+      // Fallback: generate QR code dengan styling
+      const styledQrBuffer = await QRCode.toBuffer(shortUrl, {
+        errorCorrectionLevel: 'H',
+        width: 500,
+        margin: 2,
+        color: {
+          dark: '#667eea',
+          light: '#f8f9fa'
+        },
+        type: 'png'
+      });
+      
+      const styledQrBase64 = styledQrBuffer.toString('base64');
+      const styledQrDataUrl = `data:image/png;base64,${styledQrBase64}`;
+      
+      res.json({
+        artisticQrDataUrl: styledQrDataUrl,
+        artKey: `fallback:${shortCode}:${nanoid(5)}`,
+        prompt: `${prompt} (Fallback Mode)`,
+        fallback: true
+      });
+    }
+
+  } catch (error) {
+    console.error('QR Art Generation Error:', error);
+    
+    res.status(500).json({ 
+      error: 'Gagal menghasilkan QR code artistik',
+      fallback: true 
+    });
+  }
+});
+
+// Endpoint untuk mendapatkan hasil yang disimpan
+app.get('/api/qr-art/:artKey', async (req, res) => {
+  try {
+    const { artKey } = req.params;
+    const artData = await redis.get(artKey);
+    
+    if (!artData) {
+      return res.status(404).json({ error: 'QR art tidak ditemukan' });
+    }
+    
+    const parsedData = JSON.parse(artData);
+    
+    // Jika berupa data URL, kirim sebagai image
+    if (parsedData.artisticQrDataUrl && parsedData.artisticQrDataUrl.startsWith('data:image')) {
+      const base64Data = parsedData.artisticQrDataUrl.split(',')[1];
+      const imageBuffer = Buffer.from(base64Data, 'base64');
+      
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache 24 jam
+      return res.send(imageBuffer);
+    }
+    
+    res.json(parsedData);
+  } catch (error) {
+    console.error('Get QR Art Error:', error);
+    res.status(500).json({ error: 'Gagal mengambil QR art' });
+  }
+});
+
+// Endpoint untuk mendapatkan daftar QR art berdasarkan shortCode
+app.get('/api/qr-art/history/:shortCode', async (req, res) => {
+  try {
+    const { shortCode } = req.params;
+    const pattern = `qr_art:${shortCode}:*`;
+    
+    // Cari semua keys yang match pattern
+    const keys = await redis.keys(pattern);
+    const artHistory = [];
+    
+    for (const key of keys) {
+      const artData = await redis.get(key);
+      if (artData) {
+        const parsedData = JSON.parse(artData);
+        artHistory.push({
+          artKey: key,
+          prompt: parsedData.prompt,
+          createdAt: parsedData.createdAt,
+          fallback: parsedData.fallback || false
+        });
+      }
+    }
+    
+    // Urutkan berdasarkan createdAt (terbaru pertama)
+    artHistory.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+    res.json({ artHistory });
+  } catch (error) {
+    console.error('QR Art History Error:', error);
+    res.status(500).json({ error: 'Gagal mengambil riwayat QR art' });
+  }
+});
 
 app.post('/api/shorten', async (req, res) => {
   try {
@@ -103,6 +269,39 @@ app.get('/:shortCode/qr', async (req, res) => {
     }
 });
 
+// Endpoint untuk QR code dengan styling
+app.get('/:shortCode/qr/styled', async (req, res) => {
+    try {
+        const { shortCode } = req.params;
+        const jsonData = await redis.get(shortCode);
+        if (!jsonData) {
+            return res.status(404).send('Short URL Not Found');
+        }
+        const host = req.headers['x-forwarded-host'] || req.headers.host;
+        const protocol = process.env.VERCEL_URL ? 'https' : 'http';
+        const shortUrl = `${protocol}://${host}/${shortCode}`;
+        
+        const qrOptions = { 
+            type: 'png', 
+            width: 640, 
+            margin: 4, 
+            errorCorrectionLevel: 'H',
+            color: {
+                dark: '#667eea',
+                light: '#f8f9fa'
+            }
+        };
+        
+        const qrCodeBuffer = await QRCode.toBuffer(shortUrl, qrOptions);
+        res.setHeader('Content-Type', 'image/png');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        res.send(qrCodeBuffer);
+    } catch (error) {
+        console.error('Styled QR Code Generation Error:', error);
+        res.status(500).send('Could not generate styled QR code');
+    }
+});
+
 app.get('/:shortCode', async (req, res) => {
     try {
         const userAgent = (req.headers['user-agent'] || '').toLowerCase();
@@ -165,6 +364,28 @@ app.get('/:shortCode', async (req, res) => {
     }
 });
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.json({ 
+        status: 'healthy', 
+        timestamp: new Date().toISOString(),
+        features: {
+            qrArt: true,
+            urlShortening: true,
+            redis: true
+        }
+    });
+});
+
+// Error handling middleware
+app.use((error, req, res, next) => {
+    console.error('Unhandled Error:', error);
+    res.status(500).json({ error: 'Terjadi kesalahan internal pada server' });
+});
+
+// 404 handler untuk API routes
+app.use('/api/*', (req, res) => {
+    res.status(404).json({ error: 'Endpoint API tidak ditemukan' });
+});
+
 module.exports = app;
-
-

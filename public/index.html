@@ -53,26 +53,41 @@
                 <input type="url" id="long-url" placeholder="Contoh: https://contoh.url/yang/sangat-panjang" required>
                 <button type="submit">Pendekkan</button>
             </form>
-            
-            <div id="result" class="hidden">
-                <p>URL pendek Anda:</p>
-                <div class="short-url-container">
-                    <a href="" id="short-url" target="_blank"></a>
-                    <button id="copy-btn">Salin</button>
-                    <button id="share-link-btn" class="hidden">Bagikan</button>
-                </div>
-
-                <div class="qr-code-container">
+            <!-- QR Code Biasa -->
+            <div class="qr-code-container">
                     <img id="qr-code-image" alt="QR Code" class="hidden"/>
                     <div id="qr-actions" class="qr-actions hidden">
                         <a href="#" id="download-qr-btn" class="button-download">Unduh</a>
                         <button id="share-qr-btn" class="button-share">Bagikan Gambar</button>
                     </div>
                 </div>
-            </div>
-            <div id="error-message" class="text-error hidden"></div>
-        </div>
 
+            <!-- QR Art Generator Section -->
+            <div id="qr-art-section" class="qr-art-section hidden">
+              <h3>QR Code Artistik</h3>
+              <p>Ubah QR code menjadi karya seni dengan AI
+              </p>
+              <div class="qr-art-form">
+                <input type="text" id="qr-art-prompt" placeholder="Contoh: a beautiful landscape with mountains and lakes, digital art" maxlength="200">
+                <button id="generate-qr-art-btn">Generate QR Art</button>
+              </div>
+              <div id="qr-art-result" class="hidden">
+                <div class="qr-art-image-container">
+                  <img id="qr-art-image" alt="Artistic QR Code"/>
+                  <div class="qr-art-actions">
+                    <a href="#" id="download-qr-art-btn" class="button-download">Unduh QR Art</a>
+                    <button id="share-qr-art-btn" class="button-share">Bagikan QR Art</button>
+                    </div>
+                  </div>
+                <p class="qr-art-prompt-display">Prompt: <span id="used-prompt"></span></p>
+              </div>
+              <div id="qr-art-loading" class="qr-art-loading hidden">
+                <p>🔄 Membuat QR code artistik... Ini mungkin memakan waktu 10-30 detik.</p>
+                <div class="loading-spinner"></div>
+                </div>
+              <div id="qr-art-error" class="text-error hidden"></div>
+          </div>
+        </div>
         <!-- Section Posts Feed -->
         <section class="container container-lists" id="posts-feed-section">
             <h2>5 Posts Terbaru</h2>
@@ -83,7 +98,6 @@
                 <a href="/posts.html">Lihat semua posts →</a>
             </div>
         </section>
-
         <!-- Section Recent URLs -->
         <section class="container container-lists" id="recent-links-section" class="hidden">
             <h2>5 URL Terbaru</h2>
@@ -95,8 +109,9 @@
     <aside>
         <p class="subtitle">Made with ❤️ by <a href="//gootech.my.id">GooTech</a></p>
     </aside>
-    <script src="script.js"></script>
-    <script src="posts.js"></script>
     <script src="hamburger.js"></script>
+    <script src="script.js"></script>
+    <script src="qr-art.js"></script>
+    <script src="posts.js"></script>
 </body>
 </html>
