@@ -123,8 +123,6 @@ aside a:hover {
     max-width: 550px;
     margin: 0 auto;
     clear: both;
-    width: 100%;
-    padding: var(--container-padding);
 }
 
 .container-wide {
