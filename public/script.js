@@ -114,7 +114,6 @@ if (shortenForm) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ longUrl: longUrlInput })
             });
-
             if (response.ok) {
                 const data = await response.json();
                 shortUrlLink.href = data.shortUrl;
@@ -126,6 +125,10 @@ if (shortenForm) {
                 qrImage.classList.remove('hidden');
                 qrActions.classList.remove('hidden');
                 initializeShareButtons(data.shortUrl);
+                
+                const shortCode = data.shortUrl.split('/').pop();
+                initializeQRArt(shortCode);
+                
                 loadRecentUrls();
             } else {
                 const errorData = await response.json();
