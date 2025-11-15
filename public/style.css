@@ -120,11 +120,11 @@ aside a:hover {
 
 /* Variasi container berdasarkan konten */
 .container-form {
-    max-width: 640px;
+    max-width: 600px;
 }
 
 .container-list {
-    max-width: 640px;
+    max-width: 600px;
 }
 
 .container-wide {
